@@ -1,0 +1,348 @@
+/* styles/styles.css - Amate Joyería (versión corregida) */
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: #fff;
+    color: #222;
+}
+
+/* HEADER centrado */
+header {
+    text-align: center;
+    padding: 20px 10px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Logo centrado y responsive */
+.logo {
+    max-width: 280px;
+    width: 60%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* pequeño link arriba (novedades) */
+.top-links {
+    padding: 8px 12px;
+    text-align: center;
+    background: #fafafa;
+    border-bottom: 1px solid #eee;
+}
+.top-links .link-novedades {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+}
+
+/* Subtítulo bajo el logo */
+.sub {
+    margin-top: 6px;
+    font-size: 14px;
+    font-family: 'Playfair Display', serif; /* O 'Montserrat', 'Poppins' */
+    font-weight: 700; /* O 'bold' */
+    color: #333;
+}
+
+/* CATEGORÍAS: botones redondeados como antes */
+.categories {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding: 10px;
+    background: #fafafa;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.categories button {
+    padding: 8px 16px;
+    border: none;
+    background: #000;
+    color: #fff;
+    border-radius: 30px; /* redondeado */
+    white-space: nowrap;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+/* Caja de búsqueda */
+.search-box {
+    padding: 10px;
+    background: #fafafa;
+    border-bottom: 1px solid #eee;
+}
+.search-box input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+/* GRID de productos */
+#products {
+    padding: 15px;
+    padding-bottom: 100px; /* espacio extra para que no se corte el botón */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 15px;
+}
+
+/* CARD producto */
+.card {
+    border-radius: 12px;
+    background: #fff;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 0 8px rgba(0,0,0,0.06);
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+/* Imagen del producto (tamaño consistente) */
+.card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+}
+
+/* Títulos y precio */
+h3 { margin: 10px 0 5px 0; font-size: 16px; }
+.precio { font-weight: bold; color: #b38e5d; margin-bottom: 10px; }
+
+/* Botón comprar */
+.btn {
+    display: inline-block;
+    background: #b38e5d;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+/* Mensaje sin productos */
+.no { text-align: center; margin-top: 20px; font-size: 16px; }
+
+/* CARRUSEL: layout controlado para que las imágenes no sean gigantes */
+.carousel {
+    position: relative;
+    width: 100%;
+    height: 180px;            /* fuerza la altura para todas las slides */
+    overflow: hidden;
+    border-radius: 10px;
+    background: #f6f6f6;
+}
+
+/* Dentro del carrusel ponemos las imágenes en una capa */
+.carousel .carousel-images {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* Solo las imágenes dentro de .carousel-images se posicionan */
+.carousel .carousel-images img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity .35s ease;
+}
+
+/* imagen activa visible */
+.carousel .carousel-images img.active {
+    opacity: 1;
+    position: absolute;
+}
+
+/* Botones del carrusel */
+.carousel button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.85);
+    border: none;
+    padding: 6px 10px;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.carousel .prev { left: 8px; }
+.carousel .next { right: 8px; }
+
+/* Dots */
+.dots { display: flex; justify-content: center; gap: 6px; padding: 8px 0 0; }
+.dot { width: 10px; height: 10px; background: #ccc; border-radius: 50%; cursor: pointer; transition: background .25s; }
+.active-dot { background: #333; }
+
+/* Animaciones de entrada */
+.card { opacity: 0; transform: translateY(20px); transition: opacity .4s ease, transform .4s ease; }
+.card.show { opacity: 1; transform: translateY(0); }
+
+/* Menu inferior */
+/* Contenedor que hace scroll */
+.main-content {
+  overflow-y: auto;
+  height: calc(100vh - 60px); /* 60px = altura del bottom-menu */
+  padding-bottom: 100px; /* suficiente espacio para que el menú inferior no tape nada */
+}
+
+/* 🟡 MENÚ INFERIOR TIPO APP */
+/* Menú inferior fijo */
+.bottom-menu {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px; /* ajusta si quieres más grande */
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: #fff;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+  z-index: 9999;
+
+  -webkit-backface-visibility: hidden;
+  -webkit-transform: translate3d(0,0,0);
+}
+
+/* Ajusta los iconos dentro del menú */
+.bottom-menu button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.bottom-menu .menu-item {
+    text-align: center;
+    flex: 1;
+    text-decoration: none;
+    color: #333;
+    font-size: 12px;
+}
+
+.bottom-menu .menu-item img {
+    display: block;
+    margin: 0 auto 2px;
+    width: 24px;
+    height: 24px;
+}
+
+.bottom-menu .menu-item:hover img {
+    opacity: 1;
+}
+
+.bottom-menu .menu-item span {
+    font-size: 11px;
+}
+
+body, #products, .productos-container {
+    padding-bottom: 80px; /* Igual que la altura del menú */
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.btn-home {
+  width: 44px;
+  height: 44px;
+  background-image: url('img/icons/home.svg');
+  background-size: 22px 22px;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: #000; /* si SVG usa currentColor, no aplica en background-image */
+}
+
+/*PARA MOSTRAR LAS CATEGORIAS BIEN CHIDAS*/
+.categorias-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 15px;
+    padding: 20px;
+}
+
+.categoria-card {
+    text-align: center;
+}
+
+.categoria-card img {
+    width: 80px;      /* Tamaño recomendado para los iconos */
+    height: 80px;     /* Mantener cuadrado */
+    object-fit: contain;
+    margin-bottom: 8px;
+}
+
+/* Grid de categorías */
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 120px));
+    gap: 20px;
+    padding: 20px;
+    justify-content: center; /* centra el grid horizontalmente */
+}
+
+/* Cada tarjeta de categoría */
+.category-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: #fff;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Iconos */
+.category-card img {
+    width: 50px;       /* ajustable */
+    height: 50px;      /* ajustable */
+    margin-bottom: 10px;
+}
+
+/* Nombre de la categoría */
+.category-card p {
+    margin: 0;
+    font-weight: bold;
+    font-size: 14px;
+    color: #444;
+}
+
+/* Responsive: más pequeño en pantallas muy chicas */
+@media (max-width: 400px) {
+    .categories-grid {
+        grid-template-columns: repeat(auto-fit, minmax(60px, 100px));
+        gap: 15px;
+    }
+    .category-card img {
+        width: 40px;
+        height: 40px;
+    }
+    .category-card p {
+        font-size: 12px;
+    }
+}

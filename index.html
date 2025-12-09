@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Catálogo | Amate Joyería</title>
+    <!-- Asegúrate que el archivo exista en /styles/styles.css -->
+    <link rel="stylesheet" href="styles/styles.css" />
+</head>
+<body>
+    <div class = "main-content">
+        <header>
+        <img src="img/logoAmate.png" alt="Amate Joyería" class="logo">
+        <p class="sub">Catálogo Digital</p>
+    </header>
+
+    <!-- Enlace novedades (puedes moverlo dentro del header si prefieres) -->
+    <div class="top-links">
+        <a class="link-novedades" href="novedades.html">Novedades</a>
+    </div>
+
+    <nav class="categories">
+        <button onclick="showCategory('pulseras')">Pulseras</button>
+        <button onclick="showCategory('cadenas')">Cadenas</button>
+        <button onclick="showCategory('layers')">Layers</button>
+        <button onclick="showCategory('aretes')">Aretes</button>
+        <button onclick="showCategory('anillos')">Anillos</button>
+        <button onclick="showCategory('piercings')">Piercings</button>
+        <button onclick="showCategory('relojes')">Relojes</button>
+    </nav>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Buscar producto..." oninput="buscarProducto()">
+    </div>
+
+    <section id="products"></section>
+
+    <!-- JS: asegúrate de que js/productos.js y js/main.js existan en esa ruta -->
+    <script src="js/productos.js"></script>
+    <script src="js/main.js"></script>
+    </div>
+    
+    <!-- MENÚ INFERIOR -->
+    <nav class="bottom-menu">
+        <a href="index.html" class="menu-item">
+            <img src="img/icons/home.svg" alt="">
+            <span>Inicio</span>
+        </a>
+
+        <a href="categorias.html" class="menu-item" onclick="scrollToCategories()">
+            <img src="img/icons/categories.svg" alt="">
+            <span>Categorías</span>
+        </a>
+
+        <a href="novedades.html" class="menu-item">
+            <img src="img/icons/new.svg" alt="">
+            <span>Nuevos</span>
+        </a>
+
+        <a href="https://wa.me/526674181851?text=Hola%20que%20hermosa%20joyeria,%20me%20interesa%20comprar%20algo!" target="_blank" class="menu-item">
+            <img src="img/icons/whatsapp.svg" alt="">
+            <span>WhatsApp</span>
+        </a>
+    </nav>
+
+</body>
+</html>
