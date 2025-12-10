@@ -11,7 +11,7 @@ const productos = {
         { nombre: "Layer Gold", precio: "$199", img: "" }
     ],
     aretes: [
-        { nombre: "Arete Dorado Largo", precio: "$199",img: ["img/aretes/areteDoradoLargo.jpg","img/aretes/areteDoradoLargo2.jpg","img/aretes/areteDoradoLargo3.jpg"],
+        { nombre: "Arete Dorado Largo", precio: "$199",img: ["img/aretes/areteDoradoLargo.jpg","img/aretes/areteDoradoLargo2.jpg","img/aretes/areteDoradoLargo3.JPG"],
             nuevo: false
         },
         { nombre: "Arracada Chunky Plata", precio: "$199",img: ["img/aretes/areteArracadaChunkyPlata.jpg"],
