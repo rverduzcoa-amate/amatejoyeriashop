@@ -48,7 +48,24 @@ const productos = {
         { nombre: "Arete BOLA", precio: "199", img: "img/aretes/Photoroom_20251208_203132.jpg" }
     ],
     anillos: [
-        { nombre: "Anillo Acero", precio: "$199", img: "" }
+        { nombre: "Anillo Acero", precio: "$199", img: "img/anillos/anillo3rojos.jpg" },
+        { nombre: "Anillo Acero", precio: "$199", img: "img/anillos/anilloAbstracto.jpg" },
+        { nombre: "Anillo Acero", precio: "$199", img: "img/anillos/anilloAmorDorado.jpg" },
+        { nombre: "Anillo Acero", precio: "$199", img: "img/anillos/anilloApapachate.jpg" },
+        { nombre: "Anillo Acero", precio: "$199", img: "img/anillos/anilloBrillas.jpg" },
+        { nombre: "Anillo Acero", precio: "$199", img: "img/anillos/anilloCoraDorado.jpg" },
+        { nombre: "Anillo Acero", precio: "$199", img: "img/anillos/anilloCroisPlata.jpg" },
+        { nombre: "Anillo Acero", precio: "$199", img: "img/anillos/anilloDorado.jpg" },
+        { nombre: "Anillo Acero", precio: "$199", img: "img/anillos/anilloEstrella.jpg" },
+        { nombre: "Anillo Acero", precio: "$199", img: "img/anillos/anilloLazoBicolor.jpg" },
+        { nombre: "Anillo Acero", precio: "$199", img: "img/anillos/anilloLazoCorazonDorado.jpg" },
+        { nombre: "Anillo Acero", precio: "$199", img: "img/anillos/anilloTrioBi.jpg" },
+        { nombre: "Anillo Acero", precio: "$199", img: "img/anillos/anilloTrioDorado.jpg" },
+        { nombre: "Anillo Acero", precio: "$199", img: "img/anillos/anilloUnionDorada.jpg" },
+        { nombre: "Anillo Acero", precio: "$199", img: "img/anillos/elDorado.jpg" },
+        { nombre: "Anillo Acero", precio: "$199", img: "img/anillos/gyptoDorado.jpg" },
+        { nombre: "Anillo Acero", precio: "$199", img: "img/anillos/impalaDorado.jpg" },
+        
     ],
     piercings: [
         { nombre: "Piercing Acero", precio: "$199", img: "" }
