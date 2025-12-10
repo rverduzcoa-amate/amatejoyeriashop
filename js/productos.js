@@ -11,17 +11,31 @@ const productos = {
         { nombre: "Layer Gold", precio: "$199", img: "" }
     ],
     aretes: [
-        {
-            nombre: "Arete BOLA",
-            precio: "$199",
-            img: [
-                "img/aretes/Photoroom_20251208_201819.jpg",
-                "img/aretes/Photoroom_20251208_201859.jpg",
-                "img/aretes/Photoroom_20251208_201932.jpg"
-            ],
+        { nombre: "Arete Dorado Largo", precio: "$199",img: ["img/aretes/areteDoradoLargo.jpg","img/aretes/areteDoradoLargo2.jpg","img/aretes/areteDoradoLargo3.jpg"],
+            nuevo: false
+        },
+        { nombre: "Arracada Chunky Plata", precio: "$199",img: ["img/aretes/areteArracadaChunkyPlata.jpg"],
+            nuevo: false
+        },
+        { nombre: "Huggie Dorada", precio: "$199",img: ["img/aretes/areteArracadaHuggieDorada.jpg","img/aretes/areteArracadaHuggieDorada2.jpg"],
+            nuevo: false
+        },
+        { nombre: "Arracada Premium Dorada", precio: "$199",img: ["img/aretes/areteArradaPremiumDorada1.jpg","img/aretes/areteArradaPremiumDorada2.jpg"],
+            nuevo: false
+        },
+        { nombre: "Gota Plata", precio: "$199",img: ["img/aretes/areteGotaPlata.jpg"],
+            nuevo: false
+        },
+        { nombre: "Huggie con Circonia", precio: "$199",img: ["img/aretes/areteHuggieDoradoCirconia.jpg","img/aretes/areteHuggieDoradoCirconia2.jpg"],
             nuevo: true
         },
-        { nombre: "Arete BOLA", precio: "199", img: "img/aretes/Photoroom_20251208_201859.jpg" },
+        { nombre: "Huggie Dorada Lindi", precio: "$199",img: ["img/aretes/areteHuggiesDorado.jpg"],
+            nuevo: true
+        },
+        { nombre: "Arete BOLA", precio: "$199",img: ["img/aretes/Photoroom_20251208_201819.jpg"],
+            nuevo: false
+        },
+        { nombre: "Roberta Dorada", precio: "199", img: "img/aretes/Photoroom_20251208_201859.jpg" },
         { nombre: "Arete BOLA", precio: "199", img: "img/aretes/Photoroom_20251208_201932.jpg" },
         { nombre: "Arete BOLA", precio: "199", img: "img/aretes/Photoroom_20251208_201959.jpg" },
         { nombre: "Arete BOLA", precio: "199", img: "img/aretes/Photoroom_20251208_202106.jpg" },
@@ -40,6 +54,6 @@ const productos = {
         { nombre: "Piercing Acero", precio: "$199", img: "" }
     ],
     relojes: [
-        { nombre: "Reloj Negro", precio: "$199", img: "" }
+        { nombre: "Reloj Pleateado", precio: "$199", img: ["img/relojs/relojPlateado.jpg","img/relojs/relojPlateado2.jpg","img/relojs/relojPlateado3.jpg"] }
     ]
 };
