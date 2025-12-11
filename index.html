@@ -4,67 +4,103 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Catálogo | Amate Joyería</title>
-    <!-- Asegúrate que el archivo exista en /styles/styles.css -->
+    
     <link rel="stylesheet" href="styles/styles.css" />
+    <link rel="stylesheet" href="styles/producto.css" /> 
 </head>
 <body>
-    <div class = "main-content">
-        <header>
-        <img src="img/logoAmate.png" alt="Amate Joyería" class="logo">
-        <p class="sub">Catálogo Digital</p>
-    </header>
-
-    <!-- Enlace novedades (puedes moverlo dentro del header si prefieres) -->
-    <div class="top-links">
-        <a class="link-novedades" href="novedades.html">Novedades</a>
-    </div>
-
-    <nav class="categories">
-        <button onclick="showCategory('pulseras')">Pulseras</button>
-        <button onclick="showCategory('cadenas')">Cadenas</button>
-        <button onclick="showCategory('layers')">Layers</button>
-        <button onclick="showCategory('aretes')">Aretes</button>
-        <button onclick="showCategory('anillos')">Anillos</button>
-        <button onclick="showCategory('piercings')">Piercings</button>
-        <button onclick="showCategory('relojes')">Relojes</button>
-    </nav>
-
-    <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Buscar producto..." oninput="buscarProducto()">
-    </div>
-
-    <section id="products"></section>
-
-    <!-- JS: asegúrate de que js/productos.js y js/main.js existan en esa ruta -->
-    <script src="js/main.js"></script>
-    <script src="js/categorias.js"></script>
-    <script src="js/productos.js"></script>
-    <script src="js/novedades.js"></script>
-
-    </div>
     
-    <!-- MENÚ INFERIOR -->
+    <div class="main-content">
+        
+        <section id="vista-home" class="view active-view">
+            <header class="home-header">
+                <button class="search-icon-btn" onclick="router.goTo('busqueda')">
+                    <img src="media/img/icons/search.png" alt="Buscar" style="width: 24px; height: 24px;">
+                </button>
+                
+                <img src="media/img/logoAmate.png" alt="Amate Joyería" class="logo">
+                </header>
+        
+            <section id="videoCarouselContainer" class="vertical-carousel-container">
+                <div id="videoSlides">
+                    </div>
+                </section>
+            
+            <div class="productos-container" id="products"></div>
+
+            <section class="section-title-wrapper">
+            </section>
+            <section id="categoryVideoCarouselContainer" class="category-carousel-container">
+                <div id="categoryVideoSlides">
+                    </div>
+            </section>
+        </section>
+
+        <section id="vista-busqueda" class="view">
+            <header class="header-view">
+                <button onclick="router.goBack()">← Regresar</button>
+                <h1>Buscar Productos</h1>
+            </header>
+            <div class="search-view-content">
+                <div class="search-box-full">
+                    <input type="text" id="searchInput" placeholder="Escribe el nombre del producto..." oninput="buscarProducto()">
+                </div>
+                <section id="searchResults"></section>
+            </div>
+        </section>
+
+        <section id="vista-categorias" class="view">
+            <header class="header-view">
+                <button onclick="router.goBack()">← Regresar</button>
+                <h1>Catálogo Completo</h1> 
+            </header>
+            <div class="categories-grid" id="categoriesGrid"></div>
+        </section>
+
+        <section id="vista-novedades" class="view">
+            <header class="header-view">
+                <button onclick="router.goBack()">← Regresar</button>
+                <h1>Nuevos ✨</h1>
+            </header>
+            <div class="productos-container" id="novedades"></div>
+        </section>
+
+        <section id="vista-producto" class="view">
+            <header class="header-view">
+                <button onclick="router.goBack()">← Volver</button>
+                <h1 id="productHeaderTitle">Detalle</h1>
+            </header>
+            
+            <div id="producto-detalle"></div>
+        </section>
+        
+    </div> 
+    
     <nav class="bottom-menu">
-        <a href="index.html" class="menu-item">
-            <img src="img/icons/home.svg" alt="">
+        <a href="#home" class="menu-item" id="nav-home">
+            <img src="media/img/icons/home.svg" alt="Inicio">
             <span>Inicio</span>
         </a>
 
-        <a href="categorias.html" class="menu-item" onclick="scrollToCategories()">
-            <img src="img/icons/categories.svg" alt="">
-            <span>Categorías</span>
-        </a>
+        <a href="#categorias" class="menu-item" id="nav-catalogo">
+            <img src="media/img/icons/categories.svg" alt="Catálogo">
+            <span>Catálogo</span> </a>
 
-        <a href="novedades.html" class="menu-item">
-            <img src="img/icons/new.svg" alt="">
+        <a href="#novedades" class="menu-item" id="nav-novedades">
+            <img src="media/img/icons/new.svg" alt="Nuevos">
             <span>Nuevos</span>
         </a>
 
         <a href="https://wa.me/526674181851?text=Hola%20que%20hermosa%20joyeria,%20me%20interesa%20comprar%20algo!" target="_blank" class="menu-item">
-            <img src="img/icons/whatsapp.svg" alt="">
+            <img src="media/img/icons/whatsapp.svg" alt="WhatsApp">
             <span>WhatsApp</span>
         </a>
     </nav>
-
+    
+    <script src="js/videos.js"></script> 
+    <script src="js/productos.js"></script>
+    <script src="js/category_videos.js"></script> <script src="js/main.js"></script> <script src="js/categorias.js"></script>
+    <script src="js/novedades.js"></script>
+    <script src="js/producto.js"></script>
 </body>
 </html>

@@ -1,51 +1,49 @@
 const categorias = [
-    { 
-        nombre: "Pulseras", 
-        icon: "img/icons/pulseras.png", 
-        link: "index.html#pulseras" 
-    },
-    {
-        nombre: "Cadenas",
-         icon: "img/icons/cadenas.png",
-          link: "index.html#cadenas" },
-    { 
-        nombre: "Layers",
-        icon: "img/icons/layers.png",
-        link: "index.html#layers" 
-    },
-    { 
-        nombre: "Aretes", 
-        icon: "img/icons/aretes.png", 
-        link: "index.html#aretes" 
-    },
-    { 
-        nombre: "Anillos", 
-        icon: "img/icons/anillos.png", 
-        link: "index.html#anillos" 
-    },
-    { 
-        nombre: "Piercings", 
-        icon: "img/icons/piercings.png", 
-        link: "index.html#piercings" 
-    },
-    { 
-        nombre: "Relojes", 
-        icon: "img/icons/relojes.png", 
-        link: "index.html#relojes" 
-    },
+    { nombre: "Pulseras", icon: "media/img/icons/pulseras.png", key: "pulseras" },
+    { nombre: "Cadenas", icon: "media/img/icons/cadenas.png", key: "cadenas" },
+    { nombre: "Layers", icon: "media/img/icons/layers.png", key: "layers" },
+    { nombre: "Aretes", icon: "media/img/icons/aretes.png", key: "aretes" },
+    { nombre: "Anillos", icon: "media/img/icons/anillos.png", key: "anillos" },
+    { nombre: "Piercings", icon: "media/img/icons/piercings.png", key: "piercings" },
+    { nombre: "Relojes", icon: "media/img/icons/relojes.png", key: "relojes" },
 ];
 
-const cont = document.getElementById("categorias");
-categorias.forEach(cat => {
-    const card = document.createElement("div");
-    card.classList.add("categoria-card");
+function cargarVistaCategorias() {
+    const grid = document.getElementById("categoriesGrid");
+    if (!grid) return; 
 
-    card.innerHTML = `
-        <a href="${cat.link}">
+    grid.innerHTML = ''; 
+
+    categorias.forEach(cat => {
+        const card = document.createElement("div");
+        card.classList.add("category-card"); 
+
+        card.innerHTML = `
             <img src="${cat.icon}" alt="${cat.nombre}">
             <p>${cat.nombre}</p>
-        </a>
-    `;
+        `;
 
-    cont.appendChild(card);
-});
+        card.addEventListener('click', () => {
+            router.goTo(`home?categoria=${cat.key}`);
+        });
+
+        grid.appendChild(card);
+    });
+}
+
+
+function generateHomeNavButtons() {
+    const navCont = document.getElementById("navCategorias"); 
+    if (!navCont) return;
+    
+    navCont.innerHTML = ''; 
+
+    categorias.forEach(cat => {
+        const button = document.createElement("button");
+        button.textContent = cat.nombre;
+        button.onclick = () => {
+            router.goTo(`home?categoria=${cat.key}`);
+        };
+        navCont.appendChild(button);
+    });
+}
