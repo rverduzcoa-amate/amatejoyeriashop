@@ -1,0 +1,12 @@
+{
+  "name": "amate-images-tools",
+  "version": "1.0.0",
+  "description": "Tools to generate responsive images for Amate catalog",
+  "scripts": {
+    "generate-images": "node tools/generate_responsive_images.js --src media/img --out media/optimized --manifest media/image-manifest.json"
+  },
+  "dependencies": {
+    "minimist": "^1.2.8",
+    "sharp": "^0.32.0"
+  }
+}

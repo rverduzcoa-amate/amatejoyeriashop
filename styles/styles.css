@@ -203,6 +203,18 @@ h3 { margin: 8px 0 4px 0; font-size: 14px; font-weight: 600; }
     opacity: 0;
     transition: opacity .3s ease;
 }
+
+/* Image skeleton while loading to reduce perceived jitter */
+.img-skeleton {
+    background: linear-gradient(90deg,#f0f0f0 0%, #e8e8e8 50%, #f0f0f0 100%);
+    background-size: 200% 100%;
+    animation: skeleton 1.2s linear infinite;
+}
+.carousel .carousel-images img.loading {
+    filter: blur(3px);
+    transform: scale(1.02);
+}
+@keyframes skeleton { from { background-position: 200% 0 } to { background-position: -200% 0 } }
 .carousel .carousel-images img.active {
     opacity: 1;
     z-index: 2;
