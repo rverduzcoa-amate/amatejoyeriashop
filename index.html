@@ -2,75 +2,75 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Catálogo | Amate Joyería</title>
     
     <link rel="stylesheet" href="styles/styles.css" />
     <link rel="stylesheet" href="styles/producto.css" /> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
     
-    <div class="main-content">
-        <header class="main-header">
-            <div class="header-content">
-                <nav class="header-nav left">
-                    <button class="nav-button" onclick="router.goTo('home')">
-                        Inicio
-                    </button>
-                    <button class="nav-button" onclick="router.goTo('categorias')">
-                        Catálogo
-                    </button>
-                </nav>
+    <header class="main-header">
+        <div class="header-content">
+            <nav class="header-nav left">
+                <button class="nav-button mobile-hide" onclick="router.goTo('home')">
+                    Inicio
+                </button>
+                <button class="nav-button" onclick="router.goTo('categorias')">
+                    Catálogo
+                </button>
+            </nav>
 
-                <div class="header-logo" onclick="router.goTo('home')">
-                    <span class="logo-text">Ámate</span> 
-                </div>
-
-                <div class="header-actions right">
-                    <button class="action-button icon-search" onclick="router.goTo('busqueda')">
-                        <img src="media/img/icons/search.png" alt="Buscar" style="width: 24px; height: 24px;">
-                        <i class="fas fa-search"></i> 
-                    </button>
-                    
-                    <button id="btn-cuenta" class="action-button icon-account" onclick="router.goTo('cuenta')">
-                        <i class="fas fa-user"></i> 
-                    </button>
-                    
-                    <button id="btn-cart" class="action-button icon-cart" onclick="router.goTo('cart')">
-                        <i class="fas fa-shopping-cart"></i>
-                        </button>
-                </div>
+            <div class="header-logo" onclick="router.goTo('home')">
+                <span class="logo-text">Ámate</span> 
             </div>
-        </header>
-        <main class="main-content">
+
+            <div class="header-actions right">
+                <button class="action-button icon-search" onclick="router.goTo('busqueda')">
+                    <i class="fas fa-search"></i> 
+                </button>
+                
+                <button id="btn-cuenta" class="action-button icon-account" onclick="router.goTo('cuenta')">
+                    <i class="fas fa-user"></i> 
+                </button>
+                
+                <button id="btn-cart" class="action-button icon-cart" onclick="router.goTo('cart')">
+                    <i class="fas fa-shopping-cart"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
         
         <section id="vista-home" class="view active-view">
             <section id="videoCarouselContainer" class="vertical-carousel-container">
-                <div id="videoSlides">
-                    </div>
+                <div id="videoSlides"></div>
                 </section>
             
             <div class="productos-container" id="products"></div>
 
             <section class="section-title-wrapper">
+                <h2>Catálogo Interactivo</h2>
             </section>
+            
             <section id="categoryVideoCarouselContainer" class="category-carousel-container">
-                <div id="categoryVideoSlides">
-                    </div>
+                <div id="categoryVideoSlides"></div>
             </section>
         </section>
 
         <section id="vista-cuenta" class="view">
             <div class="view-content">
                 <h1>Mi Cuenta</h1>
-                <p>Aquí irá el formulario de inicio de sesión o los datos del usuario.</p>
+                <p>Aquí irá el formulario de inicio de sesión.</p>
             </div>
         </section>
 
         <section id="vista-cart" class="view">
             <div class="view-content">
                 <h1>Carrito de Compras</h1>
-                <p>Aquí se listarán los productos seleccionados.</p>
+                <p>Aquí se listarán los productos.</p>
             </div>
         </section>
 
@@ -112,11 +112,13 @@
             <div id="producto-detalle"></div>
         </section>
         
-    </div> 
-
+    </main> 
+    
     <script src="js/videos.js"></script> 
     <script src="js/productos.js"></script>
-    <script src="js/category_videos.js"></script> <script src="js/main.js"></script> <script src="js/categorias.js"></script>
+    <script src="js/category_videos.js"></script> 
+    <script src="js/main.js"></script> 
+    <script src="js/categorias.js"></script>
     <script src="js/novedades.js"></script>
     <script src="js/producto.js"></script>
 </body>
