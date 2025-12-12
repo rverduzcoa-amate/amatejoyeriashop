@@ -67,10 +67,10 @@ body {
     background: none;
     border: none;
     color: #333;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    padding: 5px 8px;
+    padding: 8px 10px;
     white-space: nowrap;
     /* FIX: Aseguramos que los botones SIEMPRE se muestren por defecto */
     display: block !important; 
@@ -124,10 +124,10 @@ body {
 
 @media (max-width: 450px) {
     /* Si el espacio es estrecho, reducimos el tamaño de todo */
-    .nav-button {
-        font-size: 11px; /* Más pequeños para que quepan */
+    /*.nav-button {
+        font-size: 11px; /* Más pequeños para que quepan 
         padding: 5px 4px;
-    }
+    }*/
     .header-nav, .header-actions {
         /* Se limita el ancho de los contenedores laterales para que el logo tenga espacio */
         max-width: 30%; 
