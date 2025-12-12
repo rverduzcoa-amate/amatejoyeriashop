@@ -1,6 +1,6 @@
 const products = {
     pulseras: [
-        { id: "pulsera001", nombre: "Pulsera Dorada 01", precio: "$199", img: "media/img/pulseras/pulseraChapeadaOjitos.jpg" },
+{ id: "pulsera001", nombre: "Pulsera Dorada 01", precio: "$199", img: "media/img/pulseras/pulseraChapeadaOjitos.jpg" },
         { id: "pulsera002", nombre: "Pulsera Inox Plata", precio: "$159", img: "media/img/pulseras/pulseraDoradaBonita.jpg" },
         { id: "pulsera004", nombre: "Pulsera Inox Plata", precio: "$159", img: ["media/img/pulseras/pulseraDoradaCerecitas.jpg","media/img/pulseras/pulseraDoradaCerecitas2.jpg"] },
         { id: "pulsera005", nombre: "Pulsera Inox Plata", precio: "$159", img: "media/img/pulseras/pulseraDoradaChunkyLinda.jpg" },
@@ -19,10 +19,11 @@ const products = {
         { id: "pulsera0018", nombre: "Pulsera Inox Plata", precio: "$159", img: ["media/img/pulseras/pulseraPlateadaConchas.jpg","media/img/pulseras/pulseraPlateadaConchas2.jpg"] },
         { id: "pulsera0019", nombre: "Pulsera Inox Plata", precio: "$159", img: "media/img/pulseras/pulseraPlateadaEsla.jpg" },
         { id: "pulsera0020", nombre: "Pulsera Inox Plata", precio: "$159", img: "media/img/pulseras/pulseraPlateadaLibra.jpg" },
-        { id: "pulsera0021", nombre: "Pulsera Inox Plata", precio: "$159", img: "media/img/pulseras/pulserasDoaradas.jpg" },
-    ],
+        { id: "pulsera0021", nombre: "Pulsera Inox Plata", precio: "$159", img: "media/img/pulseras/pulserasDoaradas.jpg" },,
+{ id: "pulsera_img_3163", nombre: "IMG 3163", precio: "$299", img: ["media/img/pulseras/IMG_3163(1).jpg","media/img/pulseras/IMG_3163.jpg"] }
+],
     cadenas: [
-        { id: "cadena001", nombre: "Cadena Acero 55cm", precio: "$249", img: "media/img/cadenas/cadenaAceroInox.jpg" },
+{ id: "cadena001", nombre: "Cadena Acero 55cm", precio: "$249", img: "media/img/cadenas/cadenaAceroInox.jpg" },
         { id: "cadena002", nombre: "Cadena Acero 55cm", precio: "$249", img: "media/img/cadenas/cadenaAceroInoxBicolorDije.jpg" },
         { id: "cadena003", nombre: "Cadena Acero 55cm", precio: "$249", img: "media/img/cadenas/cadenaAceroInoxBolitas.jpg" },
         { id: "cadena004", nombre: "Cadena Acero 55cm", precio: "$249", img: ["media/img/cadenas/cadenaAceroInoxCorazon.jpg","media/img/cadenas/cadenaAceroInoxCorazon2.jpg"] },
@@ -43,8 +44,9 @@ const products = {
         { id: "cadena019", nombre: "Cadena Acero 55cm", precio: "$249", img: "media/img/cadenas/cadenaAceroInoxLetra2.jpg" },
         { id: "cadena020", nombre: "Cadena Acero 55cm", precio: "$249", img: "media/img/cadenas/cadenaAceroInoxLetraLisa.jpg" },
         { id: "cadena021", nombre: "Cadena Acero 55cm", precio: "$249", img: "media/img/cadenas/cadenaAceroInoxLetraRellena.jpg" },
-        { id: "cadena022", nombre: "Cadena Acero 55cm", precio: "$249", img: ["media/img/cadenas/cadenaAceroInoxPlateadaDijeChonky.jpg","media/img/cadenas/cadenaAceroInoxPlateadaDijeChonky2.jpg"] }
-    ],
+        { id: "cadena022", nombre: "Cadena Acero 55cm", precio: "$249", img: ["media/img/cadenas/cadenaAceroInoxPlateadaDijeChonky.jpg","media/img/cadenas/cadenaAceroInoxPlateadaDijeChonky2.jpg"] },
+{ id: "cadena_405999526_10159328462481384_4355777764306565261_n", nombre: "405999526 10159328462481384 4355777764306565261 N", precio: "$299", img: ["media/img/cadenas/405999526_10159328462481384_4355777764306565261_n(1).jpg","media/img/cadenas/405999526_10159328462481384_4355777764306565261_n.jpg"] }
+],
     layers: [
         { id: "layers001", nombre: "Layer Gold", precio: "$199", img: "media/img/layers/aceroInoxLayerBolitas.jpg" },
         { id: "layers002", nombre: "Layer Gold", precio: "$199", img: "media/img/layers/aceroInoxLayerCorazonV.jpg" },
@@ -96,8 +98,36 @@ const products = {
         { id: "arete042", nombre: "aretes acero inox", precio: "199", img: "media/img/aretes/Photoroom_20251209_014513.jpg" },
         { id: "arete043", nombre: "aretes acero inox", precio: "199", img: "media/img/aretes/Photoroom_20251209_015637.jpg" },
         { id: "arete044", nombre: "aretes acero inox", precio: "199", img: "media/img/aretes/Roberta.jpg" },
-        { id: "arete045", nombre: "aretes acero inox", precio: "199", img: "media/img/aretes/Triangle.jpg" }
-    ],
+        { id: "arete045", nombre: "aretes acero inox", precio: "199", img: "media/img/aretes/Triangle.jpg" },
+        { id: "arete_70d41625_7106_4370_a294_6864c04b56f7", nombre: "70d41625 7106 4370 A294 6864c04b56f7", precio: "$299", img: "media/img/aretes/70d41625-7106-4370-a294-6864c04b56f7.jpg" },
+{ id: "arete_3e16280a_6388_4159_b74e_bf71df7a5c8c", nombre: "3e16280a 6388 4159 B74e Bf71df7a5c8c", precio: "$299", img: "media/img/aretes/3e16280a-6388-4159-b74e-bf71df7a5c8c.jpg" },
+{ id: "arete_6e82e98c_5464_4bf6_91df_b5fbb22e5896", nombre: "6e82e98c 5464 4bf6 91df B5fbb22e5896", precio: "$299", img: "media/img/aretes/6e82e98c-5464-4bf6-91df-b5fbb22e5896.jpg" },
+{ id: "arete_c55c932c_1dc1_4d45_9e32_24f4eff9d67f", nombre: "C55C932C 1DC1 4D45 9E32 24F4EFF9D67F", precio: "$299", img: "media/img/aretes/C55C932C-1DC1-4D45-9E32-24F4EFF9D67F.jpg" },
+{ id: "arete_db6c7eb0_6e93_41ca_8700_be6089b040c9", nombre: "DB6C7EB0 6E93 41CA 8700 BE6089B040C9", precio: "$299", img: "media/img/aretes/DB6C7EB0-6E93-41CA-8700-BE6089B040C9.jpg" },
+{ id: "arete_img_0237", nombre: "IMG 0237", precio: "$299", img: "media/img/aretes/IMG_0237.jpg" },
+{ id: "arete_img_0239", nombre: "IMG 0239", precio: "$299", img: "media/img/aretes/IMG_0239.jpg" },
+{ id: "arete_img_0378", nombre: "IMG 0378", precio: "$299", img: "media/img/aretes/IMG_0378.jpg" },
+{ id: "arete_img_0385", nombre: "IMG 0385", precio: "$299", img: "media/img/aretes/IMG_0385.jpg" },
+{ id: "arete_img_0520", nombre: "IMG 0520", precio: "$299", img: "media/img/aretes/IMG_0520.jpg" },
+{ id: "arete_img_0560", nombre: "IMG 0560", precio: "$299", img: "media/img/aretes/IMG_0560.jpg" },
+{ id: "arete_img_0801", nombre: "IMG 0801", precio: "$299", img: "media/img/aretes/IMG_0801.jpg" },
+{ id: "arete_img_0802", nombre: "IMG 0802", precio: "$299", img: "media/img/aretes/IMG_0802.jpg" },
+{ id: "arete_img_0806", nombre: "IMG 0806", precio: "$299", img: "media/img/aretes/IMG_0806.jpg" },
+{ id: "arete_img_0807", nombre: "IMG 0807", precio: "$299", img: "media/img/aretes/IMG_0807.jpg" },
+{ id: "arete_img_0811", nombre: "IMG 0811", precio: "$299", img: "media/img/aretes/IMG_0811.jpg" },
+{ id: "arete_img_0813", nombre: "IMG 0813", precio: "$299", img: "media/img/aretes/IMG_0813.jpg" },
+{ id: "arete_img_0924_1", nombre: "IMG 0924 1", precio: "$299", img: "media/img/aretes/IMG_0924(1).jpg" },
+{ id: "arete_img_0924", nombre: "IMG 0924", precio: "$299", img: "media/img/aretes/IMG_0924.jpg" },
+{ id: "arete_img_3127", nombre: "IMG 3127", precio: "$299", img: "media/img/aretes/IMG_3127.jpg" },
+{ id: "arete_img_6886", nombre: "IMG 6886", precio: "$299", img: "media/img/aretes/IMG_6886.jpg" },
+{ id: "arete_img_8115", nombre: "IMG 8115", precio: "$299", img: "media/img/aretes/IMG_8115.jpg" },
+{ id: "arete_img_8221", nombre: "IMG 8221", precio: "$299", img: "media/img/aretes/IMG_8221.jpg" },
+{ id: "arete_img_9157_1", nombre: "IMG 9157 1", precio: "$299", img: "media/img/aretes/IMG_9157(1).jpg" },
+{ id: "arete_img_9157", nombre: "IMG 9157", precio: "$299", img: "media/img/aretes/IMG_9157.jpg" },
+{ id: "arete_img_9160_1", nombre: "IMG 9160 1", precio: "$299", img: "media/img/aretes/IMG_9160(1).jpg" },
+{ id: "arete_img_9160", nombre: "IMG 9160", precio: "$299", img: "media/img/aretes/IMG_9160.jpg" },
+{ id: "arete_img_9172", nombre: "IMG 9172", precio: "$299", img: "media/img/aretes/IMG_9172.jpg" }
+],
     anillos: [
         { id: "anillo001", nombre: "3 Rojos", precio: "$199", img: "media/img/anillos/anillo3rojos.jpg" },
         { id: "anillo002", nombre: "Divina", precio: "$199", img: "media/img/anillos/anilloAbstracto.jpg" },
@@ -122,6 +152,14 @@ const products = {
         { id: "piercing001", nombre: "Piercing Acero", precio: "$199", img: "" }
     ],
     relojes: [
-        { id: "reloj001", nombre: "Reloj Pleateado", precio: "$199", img: ["media/img/relojs/relojPlateado.jpg","media/img/relojs/relojPlateado2.jpg","media/img/relojs/relojPlateado3.jpg"] }
-    ]
+{ id: "reloj001", nombre: "Reloj Pleateado", precio: "$199", img: ["media/img/relojs/relojPlateado.jpg","media/img/relojs/relojPlateado2.jpg","media/img/relojs/relojPlateado3.jpg"] },
+{ id: "reloje_paulina_balderas", nombre: "Paulina Balderas", precio: "$299", img: ["media/img/relojs/Paulina.Balderas (1).jpg","media/img/relojs/Paulina.Balderas (2).jpg"] },
+{ id: "reloje_paulina_balderas", nombre: "Paulina Balderas", precio: "$299", img: "media/img/relojs/Paulina.Balderas.jpg" },
+{ id: "reloje_fullbody", nombre: "FullBody", precio: "$299", img: ["media/img/relojs/fullBody(1).jpg","media/img/relojs/fullBody(2).jpg","media/img/relojs/fullBody.jpg"] },
+{ id: "reloje_bp", nombre: "Bp", precio: "$299", img: ["media/img/relojs/bp(1).jpg","media/img/relojs/bp(2).jpg","media/img/relojs/bp.jpg"] }
+]
 };
+//Commands to add products automatically can be found in tools/auto_insert_products_fixed.js
+//Examples:
+//node tools/auto_insert_products_fixed.js --category relojes --dir media/img/relojs --price '$299' --dry-run
+//node tools/auto_insert_products_fixed.js --category relojes --dir media/img/relojs --price '$299' --no-backup
