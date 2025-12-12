@@ -10,24 +10,20 @@
 
 * { box-sizing: border-box; }
 
-body, html { /* FIX 2: Usar 100% de la altura de la ventana (necesario en iOS) */
-    height: 100%;
-    margin: 0;
-}
-
 body {
+    margin: 0;
     font-family: 'Arial', sans-serif;
     background: #fff;
     color: #222;
+    /* FIX DE SCROLL: Permitir scroll vertical natural */
+    height: 100%;
     overflow-x: hidden; 
     overflow-y: auto; 
-    /* FIX 2: Asegurar que el contenido principal ocupe al menos la altura visible */
-    min-height: 100vh; 
 }
 
 /* =====================================
-    HEADER SUPERIOR (Responsive Fix)
-    ===================================== */
+   HEADER SUPERIOR (Responsive Fix)
+   ===================================== */
 
 .main-header {
     width: 100%;
@@ -43,173 +39,109 @@ body {
 .header-content {
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Crucial para centrar verticalmente */
+    align-items: center;
     width: 100%;
     height: 100%;
-    padding: 0 8px;
+    padding: 0 8px; /* Reducido para ganar espacio */
 }
 
-/* --- Navegación Izquierda (Botones: Inicio y Catálogo) --- */
+/* --- Navegación Izquierda --- */
 .header-nav {
-    display: flex !important;
-    z-index: 100; 
+    display: flex;
     align-items: center;
-    gap: 5px;
-    flex: 0 0 auto; 
-    margin-right: auto;
+    gap: 5px; /* Menos espacio entre botones */
+    flex: 1; /* Ocupa espacio disponible */
 }
 
-/* Los botones que se ocultaban antes (.mobile-hide) */
 .nav-button {
     background: none;
     border: none;
     color: #333;
-    font-size: 16px; 
+    font-size: 14px; /* Tamaño base más seguro */
     font-weight: 600;
     cursor: pointer;
-    
-    /* *** AJUSTE CRÍTICO DE ALINEACIÓN (Texto) *** */
-    line-height: 0; 
-    padding: 10px 10px; 
-    
-    white-space: nowrap;
-    display: block !important; 
+    padding: 5px 8px;
+    white-space: nowrap; /* Evita que el texto se rompa en dos líneas */
 }
 
 /* --- Logo Central --- */
 .header-logo {
-    position: absolute;
+    position: absolute; /* Centrado absoluto */
     left: 50%;
     transform: translateX(-50%);
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 15;
+    z-index: 10; /* Asegura que esté por encima si hay solapamiento leve */
 }
 
 .logo-text {
-    font-size: 24px; 
+    font-size: 24px; /* Tamaño más equilibrado para móvil */
     font-weight: bold;
     color: #333;
-    font-family: "Ámate", 'Playfair Display', serif;
-    line-height: 1; /* Valor base de línea para el texto */
+    /* Usa serif como fallback si la fuente local falla */
+    font-family: "Ámate", 'Playfair Display', serif; 
+    line-height: 1;
     cursor: pointer;
-    /* *** AJUSTE FINAL PARA ALINEACIÓN: Agregamos un ligero padding vertical al logo *** */
-    /* Esto compensa el espacio extra que la fuente personalizada puede crear */
-    padding-top: 2px;
 }
 
-/* --- Acciones Derecha (Iconos) --- */
+/* --- Acciones Derecha --- */
 .header-actions {
     display: flex;
     align-items: center;
-    flex: 0 0 auto;
-    justify-content: flex-end;
-    gap: 2px; 
-    margin-left: auto;
+    justify-content: flex-end; /* Alinea a la derecha */
+    gap: 2px; /* Espacio mínimo entre iconos */
+    flex: 1;
 }
 
 .action-button {
     background: none;
     border: none;
     color: #333;
-    font-size: 20px; 
+    font-size: 18px;
     cursor: pointer;
-    
-    /* *** AJUSTE CRÍTICO DE ALINEACIÓN (Íconos) *** */
-    line-height: 0; /* Para forzar que el ícono se centre con el padding */
-    padding: 11px 9px; 
-    
+    padding: 8px; /* Área táctil decente */
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* === RESPONSIVE: Ajustes para Pantallas Pequeñas (< 450px) === */
-
-@media (max-width: 450px) {
-    /* *** CORRECCIÓN: Se aplica el line-height y padding de nuevo para override *** */
+/* === RESPONSIVE: Ajustes para Pantallas Pequeñas (< 380px) === */
+@media (max-width: 380px) {
     .nav-button {
-        line-height: 0; 
-        padding: 8px 8px; /* Reducción ligera del padding en móvil para espacio */
-        font-size: 14px;
-    }
-    
-    .header-nav, .header-actions {
-        max-width: 35%; /* Damos un poco más de espacio a los botones */
+        font-size: 12px; /* Texto más pequeño */
+        padding: 5px;
     }
     .logo-text {
-        font-size: 20px;
-        padding-top: 1px; /* Ajuste más ligero de logo en móvil */
+        font-size: 20px; /* Logo un poco más chico para que no choque */
     }
     .action-button {
-        padding: 6px;
-        font-size: 18px; 
+        padding: 6px; /* Iconos más compactos */
+        font-size: 16px;
     }
-    
-    /* Regla para el móvil MÁS ESTRECHO (donde el botón de inicio se oculta) */
-    @media (max-width: 350px) {
-        /* Ocultamos el botón de 'Inicio' para salvar el layout */
-        .mobile-hide {
-            display: none !important; 
-        }
-    }
-}
-
-
-/* =======================================================
-    AJUSTES DE ACCESIBILIDAD/FUENTE GRANDE (CORREGIDO)
-    ======================================================= */
-
-@media (max-width: 500px) and (min-resolution: 2dppx) and (min-aspect-ratio: 1/2) {
-    /* Si el usuario ha AUMENTADO el TAMAÑO DE FUENTE, se fuerza la simplificación. */
-
-    .main-header { height: 70px; } 
-    .header-content {
-        height: 70px;
-        align-items: flex-start;
-        padding-top: 5px;
-    }
-
-    /* *************************************************************** */
-    /* *** SE MANTIENEN COMENTADAS LAS REGLAS DE OCULTACIÓN/REDUCCIÓN *** */
-    /* *************************************************************** */
-    /* .nav-button {
-        display: none !important;
-    } */
-    /* .logo-text {
-        font-size: 16px !important;
-    } */
-    
-    /* Simplificamos los iconos de acción */
-    .action-button {
-        padding: 4px;
-        font-size: 14px;
-    }
-
-    /* Movemos el contenido principal más abajo para el header más alto */
-    .main-content {
-        padding-top: 70px;
+    /* Ocultar "Inicio" en móviles muy pequeños para dar espacio */
+    .mobile-hide {
+        display: none;
     }
 }
 
 /* =====================================
-    CONTENIDO PRINCIPAL
-    ===================================== */
+   CONTENIDO PRINCIPAL
+   ===================================== */
 
 /* Mueve el contenido hacia abajo para respetar el header fijo */
 .main-content {
     padding-top: 60px; 
-    padding-bottom: 30px; 
-    min-height: 100vh; /* FIX 2: Esto soluciona los problemas de altura en iOS */
+    padding-bottom: 30px; /* Espacio al final */
+    min-height: 100vh; /* Asegura que ocupe al menos toda la pantalla */
 }
 
 /* GRID de productos */
 #products {
     padding: 15px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* 150px min para móviles */
     gap: 20px 15px; 
     align-items: start;
 }
@@ -218,7 +150,7 @@ body {
 .card {
     border-radius: 12px;
     background: #fff;
-    padding: 8px; 
+    padding: 8px; /* Padding interno reducido */
     text-align: center;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     display: block;
@@ -250,7 +182,7 @@ h3 { margin: 8px 0 4px 0; font-size: 14px; font-weight: 600; }
     width: 100%;
     /* Aspect Ratio cuadrado o 4:5 para productos se ve mejor en móvil */
     aspect-ratio: 1 / 1; 
-    height: auto; 
+    height: auto; /* Dejar que el aspect-ratio controle la altura */
     overflow: hidden;
     border-radius: 8px;
     margin-bottom: 5px; 
