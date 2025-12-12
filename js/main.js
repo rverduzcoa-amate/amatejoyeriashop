@@ -33,7 +33,7 @@ function initVideoCarousel() {
 
     container.innerHTML = videosHome.map((video, index) => `
         <div id="reel-${index}" class="video-slide-item ${index === 0 ? 'active' : ''}">
-            <video preload="auto" playsinline muted ${video.poster ? `poster="${video.poster}"` : ''}>
+            <video preload="auto" autoplay loop playsinline muted ${video.poster ? `poster="${video.poster}"` : ''}>
                 <source src="${video.src}" type="video/mp4">
             </video>
         </div>
@@ -141,7 +141,7 @@ function initCategoryVideoCarousel() {
              class="category-video-slide-item ${index === 0 ? 'active' : ''}"
              onclick="router.goTo('${video.link}')" style="cursor: pointer;">
             
-            <video preload="auto" playsinline muted ${video.poster ? `poster="${video.poster}"` : ''}>
+            <video preload="auto" autoplay loop playsinline muted ${video.poster ? `poster="${video.poster}"` : ''}>
                 <source src="${video.src}" type="video/mp4">
             </video>
             
