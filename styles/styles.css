@@ -271,7 +271,7 @@ h3 { margin: 8px 0 4px 0; font-size: 14px; font-weight: 600; }
 }
 
 /* Ajuste de padding para vistas secundarias */
-#vista-categorias, #vista-novedades, #vista-product, #vista-busqueda, #vista-cuenta, #vista-cart {
+#view-categories, #view-newArrivals, #view-product, #view-search, #view-account, #view-cart {
     padding-top: 50px; /* Espacio para el header secundario */
 }
 

@@ -27,11 +27,11 @@
             </div>
 
             <div class="header-actions right">
-                <button class="action-button icon-search" onclick="router.goTo('busqueda')">
+                <button class="action-button icon-search" onclick="router.goTo('search')">
                     <i class="fas fa-search"></i> 
                 </button>
                 
-                <button id="btn-cuenta" class="action-button icon-account" onclick="router.goTo('cuenta')">
+                <button id="btn-account" class="action-button icon-account" onclick="router.goTo('account')">
                     <i class="fas fa-user"></i> 
                 </button>
                 
@@ -44,12 +44,12 @@
 
     <main class="main-content">
         
-        <section id="vista-home" class="view active-view">
+        <section id="view-home" class="view active-view">
             <section id="videoCarouselContainer" class="vertical-carousel-container">
                 <div id="videoSlides"></div>
                 </section>
             
-            <div class="productos-container" id="products"></div>
+            <div class="products-container" id="products"></div>
 
             <section class="section-title-wrapper">
                 <h2>CATÁLOGO INTERACTIVO</h2>
@@ -60,21 +60,21 @@
             </section>
         </section>
 
-        <section id="vista-cuenta" class="view">
+        <section id="view-account" class="view">
             <div class="view-content">
                 <h1>MI CUENTA</h1>
                 <p>Login form will go here.</p>
             </div>
         </section>
 
-        <section id="vista-cart" class="view">
+        <section id="view-cart" class="view">
             <div class="view-content">
                 <h1>FAVORITOSt</h1>
                 <p>Products in the cart will be listed here.</p>
             </div>
         </section>
 
-        <section id="vista-busqueda" class="view">
+        <section id="view-search" class="view">
             <header class="header-view">
                 <button onclick="router.goBack()">← Back</button>
                 <h1>BUSCAS PRODUCTOS</h1>
@@ -87,7 +87,7 @@
             </div>
         </section>
 
-        <section id="vista-categorias" class="view">
+        <section id="view-categories" class="view">
             <header class="header-view">
                 <button onclick="router.goBack()">← Back</button>
                 <h1>CATÁLOGO COMPLETO</h1> 
@@ -95,15 +95,15 @@
             <div class="categories-grid" id="categoriesGrid"></div>
         </section>
 
-        <section id="vista-novedades" class="view">
+        <section id="view-newArrivals" class="view">
             <header class="header-view">
                 <button onclick="router.goBack()">← Back</button>
                 <h1>NOVEDADES ✨</h1>
             </header>
-            <div class="productos-container" id="novedades"></div>
+            <div class="products-container" id="newArrivals"></div>
         </section>
 
-        <section id="vista-product" class="view">
+        <section id="view-product" class="view">
             <header class="header-view">
                 <button onclick="router.goBack()">← Back</button>
                 <h1 id="productHeaderTitle">Details</h1>

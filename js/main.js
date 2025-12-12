@@ -245,23 +245,23 @@ const router = {
     views: {
         home: null,
         categories: null,
-        novedades: null,
+        newArrivals: null,
         product: null,
-        busqueda: null,
-        cuenta: null, 
+        search: null,
+        account: null, 
         cart: null
     },
 
     showView(viewName) {
         // Inicialización de vistas
         if (!this.views.home) {
-            this.views.home = document.getElementById('vista-home');
-            this.views.categories = document.getElementById('vista-categorias');
-            this.views.novedades = document.getElementById('vista-novedades');
-            this.views.product = document.getElementById('vista-product');
-            this.views.busqueda = document.getElementById('vista-busqueda'); 
-            this.views.cuenta = document.getElementById('vista-cuenta'); 
-            this.views.cart = document.getElementById('vista-cart');
+            this.views.home = document.getElementById('view-home');
+            this.views.categories = document.getElementById('view-categories');
+            this.views.newArrivals = document.getElementById('view-newArrivals');
+            this.views.product = document.getElementById('view-product');
+            this.views.search = document.getElementById('view-search'); 
+            this.views.account = document.getElementById('view-account'); 
+            this.views.cart = document.getElementById('view-cart');
         }
         
         Object.values(this.views).forEach(v => v?.classList.remove('active-view'));
@@ -297,11 +297,11 @@ const router = {
                 if (typeof loadCategoriesView === 'function') loadCategoriesView();
             }
             
-            if (viewName === 'novedades') {
+            if (viewName === 'newArrivals') {
                 if (typeof loadNewArrivals === 'function') loadNewArrivals();
             }
             
-            if (viewName === 'busqueda') {
+            if (viewName === 'search') {
                 const searchInput = document.getElementById('searchInput');
                 if(searchInput) searchInput.value = '';
                 const searchResults = document.getElementById('searchResults');

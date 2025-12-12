@@ -1,5 +1,5 @@
 function loadNewArrivals() {
-    const cont = document.getElementById("novedades");
+    const cont = document.getElementById("newArrivals");
     cont.innerHTML = ""; 
 
     let nuevos = [];
