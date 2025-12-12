@@ -216,7 +216,9 @@ const router = {
         categorias: null,
         novedades: null,
         producto: null,
-        busqueda: null
+        busqueda: null,
+        cuenta: null, 
+        cart: null
     },
 
     showView(viewName) {
@@ -226,6 +228,8 @@ const router = {
             this.views.novedades = document.getElementById('vista-novedades');
             this.views.producto = document.getElementById('vista-producto');
             this.views.busqueda = document.getElementById('vista-busqueda'); 
+            this.views.cuenta = document.getElementById('vista-cuenta'); 
+            this.views.cart = document.getElementById('vista-cart');
         }
         
         Object.values(this.views).forEach(v => v?.classList.remove('active-view'));

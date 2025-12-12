@@ -11,16 +11,40 @@
 <body>
     
     <div class="main-content">
+        <header class="main-header">
+            <div class="header-content">
+                <nav class="header-nav left">
+                    <button class="nav-button" onclick="router.goTo('home')">
+                        Inicio
+                    </button>
+                    <button class="nav-button" onclick="router.goTo('categorias')">
+                        Catálogo
+                    </button>
+                </nav>
+
+                <div class="header-logo" onclick="router.goTo('home')">
+                    <span class="logo-text">Ámate</span> 
+                </div>
+
+                <div class="header-actions right">
+                    <button class="action-button icon-search" onclick="router.goTo('busqueda')">
+                        <img src="media/img/icons/search.png" alt="Buscar" style="width: 24px; height: 24px;">
+                        <i class="fas fa-search"></i> 
+                    </button>
+                    
+                    <button id="btn-cuenta" class="action-button icon-account" onclick="router.goTo('cuenta')">
+                        <i class="fas fa-user"></i> 
+                    </button>
+                    
+                    <button id="btn-cart" class="action-button icon-cart" onclick="router.goTo('cart')">
+                        <i class="fas fa-shopping-cart"></i>
+                        </button>
+                </div>
+            </div>
+        </header>
+        <main class="main-content">
         
         <section id="vista-home" class="view active-view">
-            <header class="home-header">
-                <button class="search-icon-btn" onclick="router.goTo('busqueda')">
-                    <img src="media/img/icons/search.png" alt="Buscar" style="width: 24px; height: 24px;">
-                </button>
-                
-                <img src="media/img/logoAmate.png" alt="Amate Joyería" class="logo">
-                </header>
-        
             <section id="videoCarouselContainer" class="vertical-carousel-container">
                 <div id="videoSlides">
                     </div>
@@ -34,6 +58,20 @@
                 <div id="categoryVideoSlides">
                     </div>
             </section>
+        </section>
+
+        <section id="vista-cuenta" class="view">
+            <div class="view-content">
+                <h1>Mi Cuenta</h1>
+                <p>Aquí irá el formulario de inicio de sesión o los datos del usuario.</p>
+            </div>
+        </section>
+
+        <section id="vista-cart" class="view">
+            <div class="view-content">
+                <h1>Carrito de Compras</h1>
+                <p>Aquí se listarán los productos seleccionados.</p>
+            </div>
         </section>
 
         <section id="vista-busqueda" class="view">
@@ -75,28 +113,7 @@
         </section>
         
     </div> 
-    
-    <nav class="bottom-menu">
-        <a href="#home" class="menu-item" id="nav-home">
-            <img src="media/img/icons/home.svg" alt="Inicio">
-            <span>Inicio</span>
-        </a>
 
-        <a href="#categorias" class="menu-item" id="nav-catalogo">
-            <img src="media/img/icons/categories.svg" alt="Catálogo">
-            <span>Catálogo</span> </a>
-
-        <a href="#novedades" class="menu-item" id="nav-novedades">
-            <img src="media/img/icons/new.svg" alt="Nuevos">
-            <span>Nuevos</span>
-        </a>
-
-        <a href="https://wa.me/526674181851?text=Hola%20que%20hermosa%20joyeria,%20me%20interesa%20comprar%20algo!" target="_blank" class="menu-item">
-            <img src="media/img/icons/whatsapp.svg" alt="WhatsApp">
-            <span>WhatsApp</span>
-        </a>
-    </nav>
-    
     <script src="js/videos.js"></script> 
     <script src="js/productos.js"></script>
     <script src="js/category_videos.js"></script> <script src="js/main.js"></script> <script src="js/categorias.js"></script>
