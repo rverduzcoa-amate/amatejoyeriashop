@@ -124,10 +124,7 @@ const products = {
         { id: "piercing001", nombre: "Piercing Acero", precio: "$199", img: "" }
     ],
     relojes: [
-        { id: "reloj001", nombre: "Reloj Pleateado", precio: "$199", img: ["media/img/relojs/relojPlateado.jpg", "media/img/relojs/relojPlateado2.jpg", "media/img/relojs/relojPlateado3.jpg"] },
-        { id: "reloje_paulina_balderas", nombre: "Paulina Balderas", precio: "$299", img: ["media/img/relojs/Paulina.Balderas (1).jpg", "media/img/relojs/Paulina.Balderas (2).jpg", "media/img/relojs/Paulina.Balderas.jpg"] },
-        { id: "reloje_fullbody", nombre: "FullBody", precio: "$299", img: ["media/img/relojs/fullBody(1).jpg", "media/img/relojs/fullBody(2).jpg", "media/img/relojs/fullBody.jpg"] },
-        { id: "reloje_bp", nombre: "Bp", precio: "$299", img: ["media/img/relojs/bp(1).jpg", "media/img/relojs/bp(2).jpg", "media/img/relojs/bp.jpg"] }
+        { id: "reloj001", nombre: "Reloj Pleateado", precio: "$199", img: ["media/img/relojs/relojPlateado.jpg", "media/img/relojs/relojPlateado2.jpg", "media/img/relojs/relojPlateado3.jpg"] }
     ]
 };
 //Commands to add products automatically can be found in tools/auto_insert_products_fixed.js
