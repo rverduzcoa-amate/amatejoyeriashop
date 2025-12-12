@@ -23,6 +23,19 @@ function toggleHomeView(showVideos = true) {
 let currentVideoIndex = 0;
 let videoElements = [];
 let touchStartX = 0;
+let videoCarouselContainerElement = null;
+
+let buscarProductoTimeout = null;
+
+// Small util to escape HTML for attribute values
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
 
 function initVideoCarousel() {
     const container = document.getElementById('videoSlides');
@@ -33,7 +46,7 @@ function initVideoCarousel() {
 
     container.innerHTML = videosHome.map((video, index) => `
         <div id="reel-${index}" class="video-slide-item ${index === 0 ? 'active' : ''}">
-            <video preload="auto" autoplay loop playsinline muted ${video.poster ? `poster="${video.poster}"` : ''}>
+            <video preload="auto" autoplay playsinline muted ${video.poster ? `poster="${video.poster}"` : ''}>
                 <source src="${video.src}" type="video/mp4">
             </video>
         </div>
@@ -52,11 +65,11 @@ function initVideoCarousel() {
     });
     
     // Eventos de Swipe (Passive true mejora rendimiento de scroll)
-    const carouselContainer = document.getElementById('videoCarouselContainer');
-    if (carouselContainer) {
-        carouselContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
-        carouselContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
-        carouselContainer.addEventListener('touchend', handleTouchEnd);
+    videoCarouselContainerElement = document.getElementById('videoCarouselContainer');
+    if (videoCarouselContainerElement) {
+        videoCarouselContainerElement.addEventListener('touchstart', handleTouchStart, { passive: true });
+        videoCarouselContainerElement.addEventListener('touchmove', handleTouchMove, { passive: true });
+        videoCarouselContainerElement.addEventListener('touchend', handleTouchEnd);
     }
 
 
@@ -141,7 +154,7 @@ function initCategoryVideoCarousel() {
              class="category-video-slide-item ${index === 0 ? 'active' : ''}"
              onclick="router.goTo('${video.link}')" style="cursor: pointer;">
             
-            <video preload="auto" autoplay loop playsinline muted ${video.poster ? `poster="${video.poster}"` : ''}>
+            <video preload="auto" autoplay playsinline muted ${video.poster ? `poster="${video.poster}"` : ''}>
                 <source src="${video.src}" type="video/mp4">
             </video>
             
@@ -167,6 +180,39 @@ function initCategoryVideoCarousel() {
 function startCategoryVideoInterval() {
     if (categoryVideoInterval) clearInterval(categoryVideoInterval);
     categoryVideoInterval = setInterval(goToNextCategoryVideo, 4000); 
+}
+
+function cleanupHome() {
+    // Pause and clean video carousels
+    try {
+        if (Array.isArray(videoElements)) {
+            videoElements.forEach(item => {
+                try { item.video.pause(); } catch (e) {}
+                item.slide?.classList.remove('active');
+            });
+        }
+
+        if (Array.isArray(categoryVideoElements)) {
+            categoryVideoElements.forEach(item => {
+                try { item.video.pause(); } catch (e) {}
+                item.slide?.classList.remove('active');
+            });
+        }
+
+        if (categoryVideoInterval) {
+            clearInterval(categoryVideoInterval);
+            categoryVideoInterval = null;
+        }
+
+        if (videoCarouselContainerElement) {
+            videoCarouselContainerElement.removeEventListener('touchstart', handleTouchStart);
+            videoCarouselContainerElement.removeEventListener('touchmove', handleTouchMove);
+            videoCarouselContainerElement.removeEventListener('touchend', handleTouchEnd);
+            videoCarouselContainerElement = null;
+        }
+    } catch (err) {
+        // noop
+    }
 }
 
 function playCurrentCategoryVideo() {
@@ -221,6 +267,9 @@ const router = {
         Object.values(this.views).forEach(v => v?.classList.remove('active-view'));
 
         const targetView = this.views[viewName];
+
+        // Clean up home resources when navigating away
+        if (viewName !== 'home' && typeof cleanupHome === 'function') cleanupHome();
         if (targetView) {
             targetView.classList.add('active-view');
             
@@ -402,7 +451,7 @@ function showCategory(category) {
         if (hasMultiple) {
             const carouselId = `carousel-${category}-${index}`;
             imgContainerHTML = allImgs.map((img, i) => 
-                `<img src="${img}" class="${i === 0 ? 'active' : ''}">`
+                `<img src="${img}" class="${i === 0 ? 'active' : ''}" alt="${escapeHtml(prod.nombre || 'Producto')}">`
             ).join('');
             
             imgsHTML = `
@@ -420,7 +469,7 @@ function showCategory(category) {
             imgsHTML = `
                 <div class="carousel">
                     <div class="carousel-images">
-                        <img src="${imgSrc}" class="active">
+                        <img src="${imgSrc}" class="active" alt="${escapeHtml(prod.nombre || 'Producto')}">
                     </div>
                 </div>
             `;
@@ -447,47 +496,52 @@ function showCategory(category) {
     BÚSQUEDA
 ========================== */
 function buscarProducto() {
-    const texto = document.getElementById("searchInput").value.toLowerCase();
-    const cont = document.getElementById("searchResults"); 
-    cont.innerHTML = "";
+    clearTimeout(buscarProductoTimeout);
+    buscarProductoTimeout = setTimeout(() => {
+        const inputEl = document.getElementById("searchInput");
+        const texto = inputEl ? inputEl.value.toLowerCase() : '';
+        const cont = document.getElementById("searchResults"); 
+        if (!cont) return;
+        cont.innerHTML = "";
 
-    if (texto.length < 3) {
-        cont.innerHTML = `<p class="no">Escribe al menos 3 letras para buscar.</p>`;
-        return;
-    }
+        if (texto.length < 3) {
+            cont.innerHTML = `<p class="no">Escribe al menos 3 letras para buscar.</p>`;
+            return;
+        }
 
-    let resultados = [];
-    // Recorrer el objeto global de productos (asumiendo que viene de productos.js)
-    for(const cat in productos) {
-        productos[cat].forEach(prod=>{
-            if(prod.nombre.toLowerCase().includes(texto)) resultados.push(prod);
-        });
-    }
+        let resultados = [];
+        // Recorrer el objeto global de productos (asumiendo que viene de productos.js)
+        for(const cat in productos) {
+            productos[cat].forEach(prod=>{
+                if(prod.nombre.toLowerCase().includes(texto)) resultados.push(prod);
+            });
+        }
 
-    if(resultados.length===0) {
-        cont.innerHTML = `<p class="no">No se encontraron resultados para "${texto}".</p>`;
-        return;
-    }
+        if(resultados.length===0) {
+            cont.innerHTML = `<p class="no">No se encontraron resultados para "${escapeHtml(texto)}".</p>`;
+            return;
+        }
 
-    let htmlContent = [];
-    resultados.forEach((prod) => {
-        const imgSrc = Array.isArray(prod.img) ? prod.img[0] : prod.img;
-        htmlContent.push(`
-            <div class="card card-link" onclick="router.goTo('producto?id=${prod.id}')">
-                <div class="carousel">
-                    <div class="carousel-images">
-                        <img src="${imgSrc}" class="active">
+        let htmlContent = [];
+        resultados.forEach((prod) => {
+            const imgSrc = Array.isArray(prod.img) ? prod.img[0] : prod.img;
+            htmlContent.push(`
+                <div class="card card-link" onclick="router.goTo('producto?id=${prod.id}')">
+                    <div class="carousel">
+                        <div class="carousel-images">
+                            <img src="${imgSrc}" class="active" alt="${escapeHtml(prod.nombre || 'Producto')}">
+                        </div>
                     </div>
+                    <h3>${prod.nombre}</h3>
+                    <p class="precio">${prod.precio}</p>
                 </div>
-                <h3>${prod.nombre}</h3>
-                <p class="precio">${prod.precio}</p>
-            </div>
-        `);
-    });
-    // Se inserta el contenedor de productos con la clase products para que aplique el grid
-    cont.innerHTML = `<section id="products">${htmlContent.join('')}</section>`;
-    
-    setTimeout(animarProductos, 250);
+            `);
+        });
+        // Se inserta el contenedor de productos con la clase products para que aplique el grid
+        cont.innerHTML = `<section id="products">${htmlContent.join('')}</section>`;
+        
+        setTimeout(animarProductos, 250);
+    }, 250);
 }
 
 /* ==========================

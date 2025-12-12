@@ -290,6 +290,12 @@ h3 { margin: 8px 0 4px 0; font-size: 14px; font-weight: 600; }
 }
 
 /* === CARRUSEL DE REELS (Home) === */
+/* Asegurar que los videos no muestren controles nativos o superpuestos */
+.vertical-carousel-container video,
+.video-slide-item video {
+    pointer-events: none; /* Evita que el usuario interactúe y ponga pausa */
+    user-select: none;    /* Evita la selección */
+}
 .vertical-carousel-container {
     width: 100%;
     max-width: 350px; 
@@ -307,6 +313,11 @@ h3 { margin: 8px 0 4px 0; font-size: 14px; font-weight: 600; }
 
 
 /* === CARRUSEL DE CATEGORÍAS (Clicable) === */
+/* Asegurar que los videos no muestren controles nativos o superpuestos */
+.category-video-slide-item video {
+    pointer-events: none; /* Evita que el usuario interactúe y ponga pausa */
+    user-select: none;
+}
 .section-title-wrapper { text-align: center; margin: 20px 0 10px; }
 .section-title-wrapper h2 { font-size: 18px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
 
