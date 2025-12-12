@@ -2,26 +2,10 @@ const products = {
     pulseras: [
         { id: "pulsera001", nombre: "Pulsera Dorada 01", precio: "$199", img: "media/img/pulseras/pulseraChapeadaOjitos.jpg" },
         { id: "pulsera002", nombre: "Pulsera Inox Plata", precio: "$159", img: "media/img/pulseras/pulseraDoradaBonita.jpg" },
-        {
-            id: "pulsera004",
-            nombre: "Pulsera Inox Plata",
-            precio: "$159",
-            img: [
-                "media/img/pulseras/pulseraDoradaCerecitas.jpg",
-                "media/img/pulseras/pulseraDoradaCerecitas2.jpg"
-            ]
-        },
+        { id: "pulsera004", nombre: "Pulsera Inox Plata", precio: "$159", img: ["media/img/pulseras/pulseraDoradaCerecitas.jpg", "media/img/pulseras/pulseraDoradaCerecitas2.jpg"] },
         { id: "pulsera005", nombre: "Pulsera Inox Plata", precio: "$159", img: "media/img/pulseras/pulseraDoradaChunkyLinda.jpg" },
         { id: "pulsera006", nombre: "Pulsera Inox Plata", precio: "$159", img: "media/img/pulseras/pulseraDoradaCorazonBolitas.jpg" },
-        {
-            id: "pulsera007",
-            nombre: "Pulsera Inox Plata",
-            precio: "$159",
-            img: [
-                "media/img/pulseras/pulseraDoradaEsla.jpg",
-                "media/img/pulseras/pulseraDoradaEsla2.jpg"
-            ]
-        },
+        { id: "pulsera007", nombre: "Pulsera Inox Plata", precio: "$159", img: ["media/img/pulseras/pulseraDoradaEsla.jpg", "media/img/pulseras/pulseraDoradaEsla2.jpg"] },
         { id: "pulsera008", nombre: "Pulsera Inox Plata", precio: "$159", img: "media/img/pulseras/pulseraDoradaLayers.jpg" },
         { id: "pulsera009", nombre: "Pulsera Inox Plata", precio: "$159", img: "media/img/pulseras/pulseraDoradaLinda.jpg" },
         { id: "pulsera0010", nombre: "Pulsera Inox Plata", precio: "$159", img: "media/img/pulseras/pulseraDoradaLindi.jpg" },
@@ -112,7 +96,7 @@ const products = {
         { id: "arete_img_9152", nombre: "IMG 9152", precio: "$299", img: "media/img/aretes/IMG_9152.jpg" },
         { id: "arete_img_9154", nombre: "IMG 9154", precio: "$299", img: "media/img/aretes/IMG_9154.jpg" },
         { id: "arete_img_9157", nombre: "IMG 9157", precio: "$299", img: ["media/img/aretes/IMG_9157(1).jpg","media/img/aretes/IMG_9157.jpg"] },
-        { id: "arete_img_9160", nombre: "IMG 9160", precio: "$299", img: "media/img/aretes/IMG_9160.jpg" },
+        { id: "arete_img_9160", nombre: "IMG 9160", precio: "$299", img: ["media/img/aretes/IMG_9160.jpg", "media/img/aretes/IMG_9160(1).jpg"] },
         { id: "arete_img_mas", nombre: "IMG Mas", precio: "$299", img: "media/img/aretes/IMG_mas.jpg" },
         { id: "arete_img_more", nombre: "IMG More", precio: "$299", img: "media/img/aretes/IMG_more.jpg" },
         { id: "arete_img_otra", nombre: "IMG Otra", precio: "$299", img: "media/img/aretes/IMG_otra.jpg" }
