@@ -99,9 +99,10 @@ function initVideoCarousel() {
         return;
     }
 
+    // Use metadata preload to reduce network weight on first paint
     container.innerHTML = videosHome.map((video, index) => `
         <div id="reel-${index}" class="video-slide-item ${index === 0 ? 'active' : ''}">
-            <video preload="auto" autoplay playsinline muted ${video.poster ? `poster="${video.poster}"` : ''}>
+            <video preload="metadata" autoplay playsinline muted ${video.poster ? `poster="${video.poster}"` : ''}>
                 <source src="${video.src}" type="video/mp4">
             </video>
         </div>
@@ -209,7 +210,7 @@ function initCategoryVideoCarousel() {
              class="category-video-slide-item ${index === 0 ? 'active' : ''}"
              onclick="router.goTo('${video.link}')" style="cursor: pointer;">
             
-            <video preload="auto" autoplay playsinline muted ${video.poster ? `poster="${video.poster}"` : ''}>
+            <video preload="metadata" autoplay playsinline muted ${video.poster ? `poster="${video.poster}"` : ''}>
                 <source src="${video.src}" type="video/mp4">
             </video>
             
@@ -289,6 +290,28 @@ function playCurrentCategoryVideo() {
     }, 50);
 }
 
+// Try to play home videos immediately on view load. If browser blocks autoplay,
+// the overlay will be shown to request a user gesture.
+function attemptImmediateHomePlay() {
+    try {
+        // Try play the main reels (first one)
+        if (Array.isArray(videoElements) && videoElements.length) {
+            const v = videoElements[0];
+            v.video.muted = true;
+            v.video.play().catch(() => { showGlobalPlayOverlay(); });
+        }
+
+        // Try play first category video
+        if (Array.isArray(categoryVideoElements) && categoryVideoElements.length) {
+            const cv = categoryVideoElements[0];
+            cv.video.muted = true;
+            cv.video.play().catch(() => { showGlobalPlayOverlay(); });
+        }
+    } catch (e) {
+        // noop
+    }
+}
+
 function goToNextCategoryVideo() {
     currentCategoryVideoIndex = (currentCategoryVideoIndex + 1) % categoryVideoElements.length;
     playCurrentCategoryVideo();
@@ -342,6 +365,9 @@ const router = {
                 // Iniciar carruseles
                 if (typeof initVideoCarousel === 'function') initVideoCarousel();
                 if (typeof initCategoryVideoCarousel === 'function') initCategoryVideoCarousel();
+
+                // Attempt to start playback immediately; overlay will appear if blocked.
+                if (typeof attemptImmediateHomePlay === 'function') attemptImmediateHomePlay();
                 
                 // Limpiar productos (porque estamos en el home principal)
                 const productsCont = document.getElementById("products");
@@ -494,69 +520,93 @@ function initAllCarousels() {
 function showCategory(category) {
     const cont = document.getElementById("products");
     if(!cont) return;
-    cont.innerHTML = ""; 
-    
-    // Ocultar los videos del home, mostrar solo productos
-    toggleHomeView(false); 
+    cont.innerHTML = "";
 
-    // Aquí se asume que la variable global `products` (cargada por products.js) está disponible
-    const productsByCategory = products[category]; 
+    // Ocultar los videos del home, mostrar solo productos
+    toggleHomeView(false);
+
+    const productsByCategory = products[category];
     if (!productsByCategory || productsByCategory.length === 0) {
         cont.innerHTML = `<p class="no">No products found in category ${category}.</p>`;
-        return; 
+        return;
     }
 
-    let htmlContent = [];
+    // Render products in small chunks to avoid blocking the main thread for large lists
+    const chunkSize = 20;
+    let index = 0;
 
-    productsByCategory.forEach((prod,index) => {
-        let imgsHTML = "";
-        const allImgs = Array.isArray(prod.img) ? prod.img : [prod.img];
-        const hasMultiple = allImgs.length > 1;
-        
-        let imgContainerHTML = '';
+    function renderChunk() {
+        const frag = document.createDocumentFragment();
+        for (let i = 0; i < chunkSize && index < productsByCategory.length; i++, index++) {
+            const prod = productsByCategory[index];
+            const card = document.createElement('div');
+            card.className = 'card card-link';
+            card.style.cursor = 'pointer';
+            card.setAttribute('onclick', `router.goTo('product?id=${prod.id}')`);
 
-        if (hasMultiple) {
-            const carouselId = `carousel-${category}-${index}`;
-            imgContainerHTML = allImgs.map((img, i) => 
-                `<img src="${img}" class="${i === 0 ? 'active' : ''}" alt="${escapeHtml(prod.nombre || 'Producto')}">`
-            ).join('');
-            
-            imgsHTML = `
-                <div class="carousel" id="${carouselId}">
-                    <div class="carousel-images">${imgContainerHTML}</div>
-                    <button class="prev" data-id="${carouselId}">‹</button>
-                    <button class="next" data-id="${carouselId}">›</button>
-                    <div class="dots">
-                        ${allImgs.map((_, i) => `<span class="dot ${i === 0 ? 'active-dot' : ''}" data-index="${i}" data-id="${carouselId}"></span>`).join('')}
-                    </div>
-                </div>
-            `;
-        } else {
-            const imgSrc = allImgs[0] || 'media/img/placeholder.jpg';
-            imgsHTML = `
-                <div class="carousel">
-                    <div class="carousel-images">
-                        <img src="${imgSrc}" class="active" alt="${escapeHtml(prod.nombre || 'Producto')}">
-                    </div>
-                </div>
-            `;
+            const allImgs = Array.isArray(prod.img) ? prod.img : (prod.img ? [prod.img] : []);
+            const hasMultiple = allImgs.length > 1;
+
+            let imgsContainer = document.createElement('div');
+            imgsContainer.className = 'carousel';
+            const imgsInner = document.createElement('div');
+            imgsInner.className = 'carousel-images';
+
+            if (hasMultiple) {
+                allImgs.forEach((img, idx) => {
+                    const imgEl = document.createElement('img');
+                    imgEl.src = img;
+                    imgEl.alt = prod.nombre || 'Producto';
+                    imgEl.className = idx === 0 ? 'active' : '';
+                    imgEl.loading = 'lazy';
+                    imgEl.decoding = 'async';
+                    imgsInner.appendChild(imgEl);
+                });
+
+                imgsContainer.appendChild(imgsInner);
+                const prev = document.createElement('button'); prev.className = 'prev'; prev.textContent = '‹'; prev.setAttribute('data-id', `carousel-${category}-${index}`);
+                const next = document.createElement('button'); next.className = 'next'; next.textContent = '›'; next.setAttribute('data-id', `carousel-${category}-${index}`);
+                imgsContainer.appendChild(prev);
+                imgsContainer.appendChild(next);
+                const dots = document.createElement('div'); dots.className = 'dots';
+                allImgs.forEach((_, d) => {
+                    const span = document.createElement('span'); span.className = d === 0 ? 'dot active-dot' : 'dot'; span.setAttribute('data-index', d); span.setAttribute('data-id', `carousel-${category}-${index}`);
+                    dots.appendChild(span);
+                });
+                imgsContainer.appendChild(dots);
+            } else {
+                const imgSrc = allImgs[0] || 'media/img/placeholder.jpg';
+                const imgEl = document.createElement('img');
+                imgEl.src = imgSrc;
+                imgEl.alt = prod.nombre || 'Producto';
+                imgEl.className = 'active';
+                imgEl.loading = 'lazy';
+                imgEl.decoding = 'async';
+                imgsInner.appendChild(imgEl);
+                imgsContainer.appendChild(imgsInner);
+            }
+
+            const title = document.createElement('h3'); title.textContent = prod.nombre || 'Producto';
+            const price = document.createElement('p'); price.className = 'precio'; price.textContent = prod.precio || '';
+
+            card.appendChild(imgsContainer);
+            card.appendChild(title);
+            card.appendChild(price);
+            frag.appendChild(card);
         }
 
-        htmlContent.push(`
-            <div class="card card-link" onclick="router.goTo('product?id=${prod.id}')" style="cursor: pointer;">
-                ${imgsHTML}
-                <h3>${prod.nombre || 'Producto'}</h3>
-                <p class="precio">${prod.precio || ''}</p>
-            </div>
-        `);
-    });
+        cont.appendChild(frag);
 
-    cont.innerHTML = htmlContent.join(''); 
+        if (index < productsByCategory.length) {
+            // yield back to the browser
+            requestAnimationFrame(renderChunk);
+        } else {
+            // Finished rendering
+            setTimeout(() => { animateProducts(); initAllCarousels(); }, 0);
+        }
+    }
 
-    setTimeout(() => {
-        animateProducts(); 
-        initAllCarousels();
-    }, 0); 
+    renderChunk();
 }
 
 /* ==========================
@@ -596,7 +646,7 @@ function searchProduct() {
                 <div class="card card-link" onclick="router.goTo('product?id=${prod.id}')">
                     <div class="carousel">
                         <div class="carousel-images">
-                            <img src="${imgSrc}" class="active" alt="${escapeHtml(prod.nombre || 'Product')}">
+                            <img src="${imgSrc}" loading="lazy" decoding="async" class="active" alt="${escapeHtml(prod.nombre || 'Product')}">
                         </div>
                     </div>
                     <h3>${prod.nombre}</h3>
