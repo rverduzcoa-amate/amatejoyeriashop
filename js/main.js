@@ -401,6 +401,8 @@ const router = {
                 // Limpiar productos (porque estamos en el home principal)
                 const productsCont = document.getElementById("products");
                 if (productsCont) productsCont.innerHTML = ""; 
+                // Render home product feed incrementally
+                if (typeof renderHomeProducts === 'function') renderHomeProducts();
             }
 
             if (viewName === 'categories') {
@@ -696,4 +698,105 @@ function animateProducts() {
     document.querySelectorAll(".card").forEach((card,i)=>{
         setTimeout(()=>card.classList.add("show"), 80*i);
     });
+}
+
+/* ==========================
+    RENDER HOME PRODUCTS (Incremental)
+   Render the homepage product feed in small chunks. If a global `homeProducts`
+   array exists it will be used; otherwise we flatten `products`.
+========================== */
+function renderHomeProducts() {
+    const cont = document.getElementById('products');
+    if (!cont) return;
+    cont.innerHTML = '';
+
+    // Build feed: prefer `homeProducts` if present (allows curated feed), else flatten all categories
+    let feed = (typeof homeProducts !== 'undefined' && Array.isArray(homeProducts)) ? homeProducts : [];
+    if (feed.length === 0 && typeof products !== 'undefined') {
+        for (const cat in products) {
+            if (Array.isArray(products[cat])) feed = feed.concat(products[cat]);
+        }
+    }
+
+    if (!feed || feed.length === 0) return;
+
+    // Render the first N items synchronously for immediate paint, then chunk the rest
+    const firstVisible = Math.min(8, feed.length);
+    let index = 0;
+
+    function createCard(prod) {
+        const card = document.createElement('div');
+        card.className = 'card card-link';
+        card.style.cursor = 'pointer';
+        card.setAttribute('onclick', `router.goTo('product?id=${prod.id}')`);
+
+        const allImgs = Array.isArray(prod.img) ? prod.img : (prod.img ? [prod.img] : []);
+        const imgsContainer = document.createElement('div');
+        imgsContainer.className = 'carousel';
+        const imgsInner = document.createElement('div');
+        imgsInner.className = 'carousel-images';
+
+        if (allImgs.length > 1) {
+            allImgs.forEach((img, idx) => {
+                const imgEl = document.createElement('img');
+                imgEl.src = img;
+                imgEl.alt = prod.nombre || 'Producto';
+                imgEl.className = idx === 0 ? 'active' : '';
+                imgEl.loading = 'lazy';
+                imgEl.decoding = 'async';
+                imgsInner.appendChild(imgEl);
+            });
+            imgsContainer.appendChild(imgsInner);
+            const prev = document.createElement('button'); prev.className = 'prev'; prev.textContent = '‹';
+            const next = document.createElement('button'); next.className = 'next'; next.textContent = '›';
+            imgsContainer.appendChild(prev); imgsContainer.appendChild(next);
+            const dots = document.createElement('div'); dots.className = 'dots';
+            allImgs.forEach((_, d) => { const span = document.createElement('span'); span.className = d === 0 ? 'dot active-dot' : 'dot'; dots.appendChild(span); });
+            imgsContainer.appendChild(dots);
+        } else {
+            const imgEl = document.createElement('img');
+            imgEl.src = allImgs[0] || 'media/img/placeholder.jpg';
+            imgEl.alt = prod.nombre || 'Producto';
+            imgEl.className = 'active';
+            imgEl.loading = 'lazy';
+            imgEl.decoding = 'async';
+            imgsInner.appendChild(imgEl);
+            imgsContainer.appendChild(imgsInner);
+        }
+
+        const title = document.createElement('h3'); title.textContent = prod.nombre || 'Producto';
+        const price = document.createElement('p'); price.className = 'precio'; price.textContent = prod.precio || '';
+
+        card.appendChild(imgsContainer);
+        card.appendChild(title);
+        card.appendChild(price);
+        return card;
+    }
+
+    // Render firstVisible items synchronously
+    const frag = document.createDocumentFragment();
+    for (; index < firstVisible; index++) {
+        frag.appendChild(createCard(feed[index]));
+    }
+    cont.appendChild(frag);
+
+    // Continue rendering remaining items in chunks
+    const chunkSize = 20;
+
+    function renderChunk() {
+        const f = document.createDocumentFragment();
+        for (let i = 0; i < chunkSize && index < feed.length; i++, index++) {
+            f.appendChild(createCard(feed[index]));
+        }
+        cont.appendChild(f);
+
+        if (index < feed.length) {
+            requestAnimationFrame(renderChunk);
+        } else {
+            setTimeout(() => { animateProducts(); initAllCarousels(); }, 0);
+        }
+    }
+
+    if (index < feed.length) requestAnimationFrame(renderChunk);
+    else setTimeout(() => { animateProducts(); initAllCarousels(); }, 0);
 }
