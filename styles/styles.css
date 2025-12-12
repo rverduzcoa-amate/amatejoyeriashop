@@ -1,5 +1,12 @@
 /* styles/styles.css - Amate Joyería (Diseño App Simplificado) */
 
+@font-face {
+    font-family: "Ámate", serif;;
+    src: url('/fonts/tufuentelocal.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
 * { box-sizing: border-box; }
 
 body {
@@ -161,9 +168,8 @@ h3 { margin: 10px 0 5px 0; font-size: 16px; }
 
 /* Configuración de Scroll para SPA */
 .main-content {
-  overflow-y: auto;
-  height: calc(100vh - 60px);
-  padding-bottom: 100px; 
+    padding-top: 60px; /* Igual a la altura del .main-header */
+    /* El resto de estilos para .main-content permanece igual */
 }
 
 html, body {
@@ -272,6 +278,93 @@ body, #products, .productos-container {
 
 .view.active-view {
     display: block; 
+}
+
+/* =====================================
+   ESTILOS DEL NUEVO HEADER SUPERIOR
+   ===================================== */
+
+.main-header {
+    width: 100%;
+    height: 60px; /* Altura fija para el header */
+    background-color: #ffffff; /* Color de fondo claro */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: fixed; /* Lo mantiene arriba al hacer scroll */
+    top: 0;
+    left: 0;
+    z-index: 1000; /* Asegura que esté por encima de todo */
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between; /* Distribuye el espacio entre los 3 grupos */
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 0 10px; /* Pequeño margen a los lados */
+}
+
+/* --- Navegación (Inicio | Catálogo) --- */
+.header-nav {
+    display: flex;
+    gap: 15px; /* Espacio entre los botones de navegación */
+}
+
+.nav-button {
+    background: none;
+    border: none;
+    color: #333; /* Color oscuro para el texto */
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+/* --- Logo Central --- */
+.header-logo {
+    position: absolute; /* Para centrarlo sin afectar al flexbox */
+    left: 50%;
+    transform: translateX(-50%);
+    height: 100%; /* Toma la altura completa */
+    display: flex;
+    align-items: center;
+}
+
+.header-logo img {
+    height: 100px; /* Tamaño del logo */
+    cursor: pointer;
+}
+
+/* --- Acciones (Búsqueda | Cuenta | Carrito) --- */
+.header-actions {
+    display: flex;
+    gap: 10px; /* Espacio entre los iconos */
+}
+
+.action-button {
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 18px; /* Tamaño del icono */
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- NUEVO ESTILO PARA EL TEXTO DEL LOGO --- */
+.logo-text {
+    font-size: 30px; /* Ajusta el tamaño para que se vea bien */
+    font-weight: bold; /* Si el logo era grueso */
+    color: #333333; /* Color que uses para el logo, ej. negro */
+    
+    /* ***** REEMPLAZA 'Nombre de tu Fuente' con la fuente real de tu logo ***** */
+    font-family: serif; 
+    /* ************************************************************************* */
+    
+    line-height: 1; /* Para centrarlo verticalmente */
+    cursor: pointer;
 }
 
 /* Header fijo para las vistas secundarias (incluyendo Búsqueda) */
