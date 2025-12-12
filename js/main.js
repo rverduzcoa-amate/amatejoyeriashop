@@ -52,9 +52,13 @@ function initVideoCarousel() {
     });
     
     // Eventos de Swipe (Passive true mejora rendimiento de scroll)
-    container.addEventListener('touchstart', handleTouchStart, { passive: true });
-    container.addEventListener('touchmove', handleTouchMove, { passive: true });
-    container.addEventListener('touchend', handleTouchEnd);
+    const carouselContainer = document.getElementById('videoCarouselContainer');
+    if (carouselContainer) {
+        carouselContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
+        carouselContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
+        carouselContainer.addEventListener('touchend', handleTouchEnd);
+    }
+
 
     playCurrentVideo();
 }
@@ -92,11 +96,12 @@ function goToPrevVideo() {
     LÓGICA DE SWIPE
 ========================== */
 function handleTouchStart(e) {
+    // Solo captura el inicio del toque
     touchStartX = e.touches[0].clientX; 
 }
 
 function handleTouchMove(e) {
-    // Permitimos scroll vertical natural
+    // Permitimos scroll vertical natural (no hacemos nada aquí)
 }
 
 function handleTouchEnd(e) {
@@ -104,12 +109,19 @@ function handleTouchEnd(e) {
     const diff = touchStartX - touchEndX; 
     const threshold = 50; 
 
+    // Aquí evitamos el swipe horizontal agresivo, porque este carrusel es vertical.
+    // Para carruseles verticales, se usaría e.touches[0].clientY.
+    // Si la intención es pasar de reel a reel verticalmente, se necesita cambiar la lógica de 'Y'.
+    // Mantendremos la lógica de 'X' solo como fallback, aunque lo ideal es el scroll vertical natural.
     if (Math.abs(diff) > threshold) {
+        // Lógica de swipe horizontal original (puede que quieras eliminarla si el carrusel es 100% vertical)
+        /*
         if (diff > 0) {
             goToNextVideo();
         } else {
             goToPrevVideo();
         }
+        */
     }
 }
 
@@ -211,19 +223,20 @@ const router = {
         const targetView = this.views[viewName];
         if (targetView) {
             targetView.classList.add('active-view');
-            // Scroll al top
-            window.scrollTo(0,0);
-            const mainScroll = document.querySelector('.main-content');
-            if(mainScroll) mainScroll.scrollTo(0,0);
+            
+            // CORRECCIÓN: Usar solo window.scrollTo(0,0) para resetear el scroll de la página.
+            // Eliminar el scroll al main-content que causaba conflictos en iOS.
+            window.scrollTo(0,0); 
 
             // LOGICA ESPECIFICA DE VISTAS
             if (viewName === 'home') {
+                
+                // Mostrar los videos (Por defecto, Home muestra carruseles)
+                if (typeof toggleHomeView === 'function') toggleHomeView(true);
+                
                 // Iniciar carruseles
                 if (typeof initVideoCarousel === 'function') initVideoCarousel();
                 if (typeof initCategoryVideoCarousel === 'function') initCategoryVideoCarousel();
-                
-                // Mostrar los videos
-                if (typeof toggleHomeView === 'function') toggleHomeView(true);
                 
                 // Limpiar productos (porque estamos en el home principal)
                 const productsCont = document.getElementById("products");
@@ -277,7 +290,7 @@ const router = {
               this.showView('home');
               const categoria = params.get('categoria');
               if (typeof showCategory === 'function') {
-                  // Aquí ocultamos los videos y mostramos productos
+                  // showCategory llama a toggleHomeView(false) para ocultar videos y mostrar productos.
                   showCategory(categoria); 
               }
               return;
@@ -310,6 +323,7 @@ window.addEventListener('DOMContentLoaded', () => {
 let carouselIntervals = {};
 
 function initAllCarousels() {
+    // Detener y limpiar intervalos anteriores
     Object.values(carouselIntervals).forEach(interval => clearInterval(interval));
     carouselIntervals = {};
 
@@ -334,10 +348,12 @@ function initAllCarousels() {
         }
 
         if (imgs.length > 1) {
+            // Inicializar carrusel automático
             const interval = setInterval(() => update((index + 1) % imgs.length), 3500);
             carouselIntervals[id] = interval;
         }
 
+        // Eventos de botones de navegación (Prev/Next)
         const prevBtn = carousel.querySelector(".prev");
         const nextBtn = carousel.querySelector(".next");
         
@@ -367,6 +383,7 @@ function showCategory(category) {
     // Ocultar los videos del home, mostrar solo productos
     toggleHomeView(false); 
 
+    // Aquí se asume que la variable global `productos` (cargada por productos.js) está disponible
     const productosDeCategoria = productos[category]; 
     if (!productosDeCategoria || productosDeCategoria.length === 0) {
         cont.innerHTML = `<p class="no">No se encontraron productos en la categoría ${category}.</p>`;
@@ -440,6 +457,7 @@ function buscarProducto() {
     }
 
     let resultados = [];
+    // Recorrer el objeto global de productos (asumiendo que viene de productos.js)
     for(const cat in productos) {
         productos[cat].forEach(prod=>{
             if(prod.nombre.toLowerCase().includes(texto)) resultados.push(prod);
@@ -466,7 +484,8 @@ function buscarProducto() {
             </div>
         `);
     });
-    cont.innerHTML = htmlContent.join('');
+    // Se inserta el contenedor de productos con la clase products para que aplique el grid
+    cont.innerHTML = `<section id="products">${htmlContent.join('')}</section>`;
     
     setTimeout(animarProductos, 250);
 }

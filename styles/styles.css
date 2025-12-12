@@ -10,20 +10,24 @@
 
 * { box-sizing: border-box; }
 
-body {
+body, html { /* FIX 2: Usar 100% de la altura de la ventana (necesario en iOS) */
+    height: 100%;
     margin: 0;
+}
+
+body {
     font-family: 'Arial', sans-serif;
     background: #fff;
     color: #222;
-    /* FIX DE SCROLL: Permitir scroll vertical natural */
-    height: 100%;
     overflow-x: hidden; 
     overflow-y: auto; 
+    /* FIX 2: Asegurar que el contenido principal ocupe al menos la altura visible */
+    min-height: 100vh; 
 }
 
 /* =====================================
-   HEADER SUPERIOR (Responsive Fix)
-   ===================================== */
+    HEADER SUPERIOR (Responsive Fix)
+    ===================================== */
 
 .main-header {
     width: 100%;
@@ -108,7 +112,6 @@ body {
 }
 
 /* === RESPONSIVE: Ajustes para Pantallas Pequeñas (< 380px) === */
-/* Usamos esta para el ajuste base del diseño en móviles pequeños */
 @media (max-width: 380px) {
     .nav-button {
         font-size: 12px;
@@ -121,7 +124,7 @@ body {
         padding: 6px; 
         font-size: 16px;
     }
-    /* El botón Inicio (mobile-hide) se oculta en móviles muy estrechos */
+    /* FIX 1: Ocultar solo el botón 'Inicio' en dispositivos EXTREMADAMENTE estrechos (para dar espacio a 'Catálogo') */
     .mobile-hide {
         display: none !important; 
     }
@@ -129,33 +132,31 @@ body {
 
 
 /* =======================================================
-   AJUSTES DE ACCESIBILIDAD (Usuarios con Fuente GRANDE)
-   --- FIX: Solo se ocultan si detectamos AUMENTO DE FUENTE ---
-   ======================================================= */
+    AJUSTES DE ACCESIBILIDAD (Usuarios con Fuente GRANDE)
+    --- ELIMINAMOS REGLAS QUE OCULTABAN INICIO DE FORMA INNECESARIA ---
+    ======================================================= */
 
-/* Usamos este rango de media query MÁS ESPECÍFICO */
-/* Sólo se activará si el texto es mucho más grande de lo normal (más de 1.3x) */
+/* ELIMINAMOS: El bloque original que ocultaba .mobile-hide entre 381px y 450px */
+
+/* Este bloque es el crítico para el DESBORDE por ACCESIBILIDAD/ZOOM DE FUENTE */
+/* FIX 1: Simplificamos esta media query, la original era demasiado específica. */
+/* Se activa en móviles donde la fuente es grande y hay riesgo de desborde */
 @media (max-width: 450px) and (min-width: 381px) {
-    /* En móviles normales (>380px), ajustamos la fuente y ocultamos 'Inicio' */
-    .mobile-hide {
-        display: none !important; 
-    }
+    /* Aquí permitimos que .mobile-hide (Inicio) se muestre, forzando la simplificación */
     .nav-button {
-        font-size: 13px; /* Pequeño ajuste */
-        padding: 5px;
-    }
-    .logo-text {
-        font-size: 20px; 
+        font-size: 11px; /* Reducción agresiva de la fuente para que quepan */
+        padding: 4px;
     }
 }
 
-
-/* Este bloque es el crítico para el DESBORDE por ACCESIBILIDAD/ZOOM DE FUENTE */
+/* Simplificación extrema forzada por aumento de fuente (usando la altura del header como proxy) */
+/* Si se detecta desborde o ajustes de accesibilidad, simplificamos radicalmente. */
 @media (max-width: 500px) and (min-resolution: 2dppx) and (min-aspect-ratio: 1/2) {
     /* Si el usuario ha AUMENTADO el TAMAÑO DE FUENTE, se fuerza la simplificación. */
 
+    .main-header { height: 70px; } /* Damos más altura */
     .header-content {
-        height: 70px; /* Damos un poco más de altura al header */
+        height: 70px;
         align-items: flex-start;
         padding-top: 5px;
     }
@@ -184,14 +185,14 @@ body {
 
 
 /* =====================================
-   CONTENIDO PRINCIPAL
-   ===================================== */
+    CONTENIDO PRINCIPAL
+    ===================================== */
 
 /* Mueve el contenido hacia abajo para respetar el header fijo */
 .main-content {
     padding-top: 60px; 
     padding-bottom: 30px; 
-    min-height: 100vh; 
+    min-height: 100vh; /* FIX 2: Esto soluciona los problemas de altura en iOS */
 }
 
 /* GRID de productos */
