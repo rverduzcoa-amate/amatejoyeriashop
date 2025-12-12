@@ -1,17 +1,17 @@
-function cargarNovedades() {
+function loadNewArrivals() {
     const cont = document.getElementById("novedades");
     cont.innerHTML = ""; 
 
     let nuevos = [];
 
-    for (let categoria in productos) {
-        productos[categoria].forEach(p => {
+    for (let categoria in products) {
+        products[categoria].forEach(p => {
             if (p.nuevo === true) nuevos.push(p);
         });
     }
 
     if (nuevos.length === 0) {
-        cont.innerHTML = `<p class="no">No hay novedades por ahora.</p>`;
+        cont.innerHTML = `<p class="no">No new arrivals at the moment.</p>`;
         return;
     }
 
@@ -19,7 +19,6 @@ function cargarNovedades() {
 
     nuevos.forEach((prod) => {
         const allImgs = Array.isArray(prod.img) ? prod.img : [prod.img];
-        // Usamos la primera imagen (ya corregida en productos.js)
         const imgSrc = allImgs[0] || '/media/img/placeholder.jpg'; 
 
         htmlContent.push(`
@@ -27,16 +26,16 @@ function cargarNovedades() {
                 <a href="#producto?id=${prod.id}" class="card-link" onclick="router.goTo('producto?id=${prod.id}'); return false;">
                     <div class="carousel"> 
                         <div class="carousel-images">
-                            <img src="${imgSrc}" alt="${prod.nombre}" class="active">
+                            <img src="${imgSrc}" alt="${escapeHtml(prod.nombre)}" class="active">
                         </div>
                     </div>
                     <h3>${prod.nombre}</h3>
                     <p class="precio">${prod.precio}</p>
                 </a>
                 <a class="btn" 
-                    href="https://wa.me/526674181851?text=Hola!%20Me%20interesa%20${prod.nombre}" 
+                    href="https://wa.me/526674181851?text=Hola!%20Me%20interesa%20${encodeURIComponent(prod.nombre)}" 
                     target="_blank">
-                    Comprar
+                    Buy
                 </a>
             </div>
         `);
@@ -44,7 +43,7 @@ function cargarNovedades() {
 
     cont.innerHTML = htmlContent.join('');
     
-    // Animación de tarjetas
+    // Card animation
     setTimeout(() => {
         const cards = cont.querySelectorAll('.card');
         cards.forEach((card, i) => {

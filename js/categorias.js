@@ -8,7 +8,7 @@ const categorias = [
     { nombre: "Relojes", icon: "media/img/icons/relojes.png", key: "relojes" },
 ];
 
-function cargarVistaCategorias() {
+function loadCategoriesView() {
     const grid = document.getElementById("categoriesGrid");
     if (!grid) return; 
 

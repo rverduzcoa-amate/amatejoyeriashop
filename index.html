@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,10 +15,10 @@
         <div class="header-content">
             <nav class="header-nav left">
                 <button class="nav-button mobile-hide" onclick="router.goTo('home')">
-                    Inicio
+                    Home
                 </button>
                 <button class="nav-button" onclick="router.goTo('categorias')">
-                    Catálogo
+                    Catalog
                 </button>
             </nav>
 
@@ -52,7 +52,7 @@
             <div class="productos-container" id="products"></div>
 
             <section class="section-title-wrapper">
-                <h2>Catálogo Interactivo</h2>
+                <h2>Interactive Catalog</h2>
             </section>
             
             <section id="categoryVideoCarouselContainer" class="category-carousel-container">
@@ -62,26 +62,26 @@
 
         <section id="vista-cuenta" class="view">
             <div class="view-content">
-                <h1>Mi Cuenta</h1>
-                <p>Aquí irá el formulario de inicio de sesión.</p>
+                <h1>My Account</h1>
+                <p>Login form will go here.</p>
             </div>
         </section>
 
         <section id="vista-cart" class="view">
             <div class="view-content">
-                <h1>Carrito de Compras</h1>
-                <p>Aquí se listarán los productos.</p>
+                <h1>Shopping Cart</h1>
+                <p>Products in the cart will be listed here.</p>
             </div>
         </section>
 
         <section id="vista-busqueda" class="view">
             <header class="header-view">
-                <button onclick="router.goBack()">← Regresar</button>
-                <h1>Buscar Productos</h1>
+                <button onclick="router.goBack()">← Back</button>
+                <h1>Search Products</h1>
             </header>
             <div class="search-view-content">
                 <div class="search-box-full">
-                    <input type="text" id="searchInput" placeholder="Escribe el nombre del producto..." oninput="buscarProducto()">
+                    <input type="text" id="searchInput" placeholder="Type product name..." oninput="searchProduct()">
                 </div>
                 <section id="searchResults"></section>
             </div>
@@ -89,24 +89,24 @@
 
         <section id="vista-categorias" class="view">
             <header class="header-view">
-                <button onclick="router.goBack()">← Regresar</button>
-                <h1>Catálogo Completo</h1> 
+                <button onclick="router.goBack()">← Back</button>
+                <h1>Full Catalog</h1> 
             </header>
             <div class="categories-grid" id="categoriesGrid"></div>
         </section>
 
         <section id="vista-novedades" class="view">
             <header class="header-view">
-                <button onclick="router.goBack()">← Regresar</button>
-                <h1>Nuevos ✨</h1>
+                <button onclick="router.goBack()">← Back</button>
+                <h1>New Arrivals ✨</h1>
             </header>
             <div class="productos-container" id="novedades"></div>
         </section>
 
         <section id="vista-producto" class="view">
             <header class="header-view">
-                <button onclick="router.goBack()">← Volver</button>
-                <h1 id="productHeaderTitle">Detalle</h1>
+                <button onclick="router.goBack()">← Back</button>
+                <h1 id="productHeaderTitle">Details</h1>
             </header>
             
             <div id="producto-detalle"></div>
@@ -115,7 +115,7 @@
     </main> 
     
     <script src="js/videos.js"></script> 
-    <script src="js/productos.js"></script>
+    <script src="js/products.js"></script>
     <script src="js/category_videos.js"></script> 
     <script src="js/main.js"></script> 
     <script src="js/categorias.js"></script>

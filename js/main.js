@@ -25,7 +25,7 @@ let videoElements = [];
 let touchStartX = 0;
 let videoCarouselContainerElement = null;
 
-let buscarProductoTimeout = null;
+let searchProductTimeout = null;
 
 // Small util to escape HTML for attribute values
 function escapeHtml(str) {
@@ -58,7 +58,7 @@ function initVideoCarousel() {
         const video = slide.querySelector('video');
         
         video.addEventListener('ended', goToNextVideo);
-        // Fix para móviles: forzar tiempo 0 al cargar
+        // Fix para móviles: forzar tiempo 0 al 
         video.addEventListener('loadedmetadata', () => { video.currentTime = 0; });
         
         videoElements.push({ slide, video });
@@ -294,11 +294,11 @@ const router = {
 
             if (viewName === 'categorias') {
                 // Cargar grid de categorías
-                if (typeof cargarVistaCategorias === 'function') cargarVistaCategorias();
+                if (typeof loadCategoriesView === 'function') loadCategoriesView();
             }
             
             if (viewName === 'novedades') {
-                if (typeof cargarNovedades === 'function') cargarNovedades();
+                if (typeof loadNewArrivals === 'function') loadNewArrivals();
             }
             
             if (viewName === 'busqueda') {
@@ -326,10 +326,10 @@ const router = {
         let viewToShow = route || 'home';
 
         // Manejo de parámetros especiales
-        if (viewToShow === 'producto' && params.has('id')) {
+            if (viewToShow === 'producto' && params.has('id')) {
             this.showView('producto');
-            if (typeof mostrarDetalleProducto === 'function') {
-                mostrarDetalleProducto(params.get('id'));
+            if (typeof showProductDetail === 'function') {
+                showProductDetail(params.get('id'));
             }
             return;
         }
@@ -432,16 +432,16 @@ function showCategory(category) {
     // Ocultar los videos del home, mostrar solo productos
     toggleHomeView(false); 
 
-    // Aquí se asume que la variable global `productos` (cargada por productos.js) está disponible
-    const productosDeCategoria = productos[category]; 
-    if (!productosDeCategoria || productosDeCategoria.length === 0) {
-        cont.innerHTML = `<p class="no">No se encontraron productos en la categoría ${category}.</p>`;
+    // Aquí se asume que la variable global `products` (cargada por products.js) está disponible
+    const productsByCategory = products[category]; 
+    if (!productsByCategory || productsByCategory.length === 0) {
+        cont.innerHTML = `<p class="no">No products found in category ${category}.</p>`;
         return; 
     }
 
     let htmlContent = [];
 
-    productosDeCategoria.forEach((prod,index) => {
+    productsByCategory.forEach((prod,index) => {
         let imgsHTML = "";
         const allImgs = Array.isArray(prod.img) ? prod.img : [prod.img];
         const hasMultiple = allImgs.length > 1;
@@ -487,7 +487,7 @@ function showCategory(category) {
     cont.innerHTML = htmlContent.join(''); 
 
     setTimeout(() => {
-        animarProductos(); 
+        animateProducts(); 
         initAllCarousels();
     }, 0); 
 }
@@ -495,9 +495,9 @@ function showCategory(category) {
 /* ==========================
     BÚSQUEDA
 ========================== */
-function buscarProducto() {
-    clearTimeout(buscarProductoTimeout);
-    buscarProductoTimeout = setTimeout(() => {
+function searchProduct() {
+    clearTimeout(searchProductTimeout);
+    searchProductTimeout = setTimeout(() => {
         const inputEl = document.getElementById("searchInput");
         const texto = inputEl ? inputEl.value.toLowerCase() : '';
         const cont = document.getElementById("searchResults"); 
@@ -505,20 +505,20 @@ function buscarProducto() {
         cont.innerHTML = "";
 
         if (texto.length < 3) {
-            cont.innerHTML = `<p class="no">Escribe al menos 3 letras para buscar.</p>`;
+            cont.innerHTML = `<p class="no">Type at least 3 letters to search.</p>`;
             return;
         }
 
         let resultados = [];
-        // Recorrer el objeto global de productos (asumiendo que viene de productos.js)
-        for(const cat in productos) {
-            productos[cat].forEach(prod=>{
+        // Iterate the global products object
+        for(const cat in products) {
+            products[cat].forEach(prod=>{
                 if(prod.nombre.toLowerCase().includes(texto)) resultados.push(prod);
             });
         }
 
         if(resultados.length===0) {
-            cont.innerHTML = `<p class="no">No se encontraron resultados para "${escapeHtml(texto)}".</p>`;
+            cont.innerHTML = `<p class="no">No results found for "${escapeHtml(texto)}".</p>`;
             return;
         }
 
@@ -529,7 +529,7 @@ function buscarProducto() {
                 <div class="card card-link" onclick="router.goTo('producto?id=${prod.id}')">
                     <div class="carousel">
                         <div class="carousel-images">
-                            <img src="${imgSrc}" class="active" alt="${escapeHtml(prod.nombre || 'Producto')}">
+                            <img src="${imgSrc}" class="active" alt="${escapeHtml(prod.nombre || 'Product')}">
                         </div>
                     </div>
                     <h3>${prod.nombre}</h3>
@@ -537,17 +537,16 @@ function buscarProducto() {
                 </div>
             `);
         });
-        // Se inserta el contenedor de productos con la clase products para que aplique el grid
         cont.innerHTML = `<section id="products">${htmlContent.join('')}</section>`;
         
-        setTimeout(animarProductos, 250);
+        setTimeout(animateProducts, 250);
     }, 250);
 }
 
 /* ==========================
     ANIMACIÓN
 ========================== */
-function animarProductos() {
+function animateProducts() {
     document.querySelectorAll(".card").forEach((card,i)=>{
         setTimeout(()=>card.classList.add("show"), 80*i);
     });

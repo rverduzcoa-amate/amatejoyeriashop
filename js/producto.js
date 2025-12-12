@@ -2,7 +2,7 @@
  * Muestra el detalle de un producto específico, llamado por el router.
  * @param {string} id - El ID del producto a buscar.
  */
-function mostrarDetalleProducto(id) {
+function showProductDetail(id) {
     const detalleContenedor = document.getElementById("producto-detalle");
     if (!detalleContenedor) return;
     
@@ -15,8 +15,8 @@ function mostrarDetalleProducto(id) {
     }
 
     let productoEncontrado = null;
-    for (const categoria in productos) {
-        const encontrado = productos[categoria].find(p => p.id == id); 
+    for (const categoria in products) {
+        const encontrado = products[categoria].find(p => p.id == id); 
         if (encontrado) {
             productoEncontrado = encontrado;
             break;
@@ -24,7 +24,7 @@ function mostrarDetalleProducto(id) {
     }
 
     if (!productoEncontrado) {
-        detalleContenedor.innerHTML = "<p>Producto no disponible.</p>";
+        detalleContenedor.innerHTML = "<p>Product not available.</p>";
         return;
     }
 
@@ -133,8 +133,8 @@ function mostrarDetalleProducto(id) {
         <p class="precio">${productoEncontrado.precio}</p>
         <p>${productoEncontrado.descripcion || ''}</p>
 
-        <a class="btn-wsp" href="https://wa.me/526674181851?text=Hola! Me interesa el producto: ${productoEncontrado.nombre}">
-            Comprar por WhatsApp
+        <a class="btn-wsp" href="https://wa.me/526674181851?text=Hello! I'm interested in the product: ${encodeURIComponent(productoEncontrado.nombre)}">
+            Buy via WhatsApp
         </a>
     `;
 
