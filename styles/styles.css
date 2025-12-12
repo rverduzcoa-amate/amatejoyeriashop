@@ -51,7 +51,10 @@ body {
 
 /* --- Navegación Izquierda (Botones: Inicio y Catálogo) --- */
 .header-nav {
-    display: flex;
+    /* **CAMBIOS CLAVE PARA FORZAR VISIBILIDAD** */
+    display: flex !important; /* Aseguramos que Flexbox esté activo */
+    z-index: 100;             /* Aseguramos que esté por encima */
+    
     align-items: center;
     gap: 5px;
     /* Usamos flex-grow: 0 y flex-shrink: 0 para que esta sección no ocupe más espacio del necesario */
@@ -72,7 +75,6 @@ body {
     /* FIX: Aseguramos que los botones SIEMPRE se muestren por defecto */
     display: block !important; 
 }
-
 /* --- Logo Central --- */
 .header-logo {
     /* El logo ya no necesita position: absolute; si los elementos laterales son flexibles */
