@@ -1,11 +1,11 @@
-const categorias = [
-    { nombre: "Pulseras", icon: "media/img/icons/pulseras.png", key: "pulseras" },
-    { nombre: "Cadenas", icon: "media/img/icons/cadenas.png", key: "cadenas" },
-    { nombre: "Layers", icon: "media/img/icons/layers.png", key: "layers" },
-    { nombre: "Aretes", icon: "media/img/icons/aretes.png", key: "aretes" },
-    { nombre: "Anillos", icon: "media/img/icons/anillos.png", key: "anillos" },
-    { nombre: "Piercings", icon: "media/img/icons/piercings.png", key: "piercings" },
-    { nombre: "Relojes", icon: "media/img/icons/relojes.png", key: "relojes" },
+const categories = [
+    { name: "Pulseras", icon: "media/img/icons/pulseras.png", key: "pulseras" },
+    { name: "Cadenas", icon: "media/img/icons/cadenas.png", key: "cadenas" },
+    { name: "Layers", icon: "media/img/icons/layers.png", key: "layers" },
+    { name: "Aretes", icon: "media/img/icons/aretes.png", key: "aretes" },
+    { name: "Anillos", icon: "media/img/icons/anillos.png", key: "anillos" },
+    { name: "Piercings", icon: "media/img/icons/piercings.png", key: "piercings" },
+    { name: "Relojes", icon: "media/img/icons/relojes.png", key: "relojes" },
 ];
 
 function loadCategoriesView() {
@@ -14,13 +14,13 @@ function loadCategoriesView() {
 
     grid.innerHTML = ''; 
 
-    categorias.forEach(cat => {
+    categories.forEach(cat => {
         const card = document.createElement("div");
         card.classList.add("category-card"); 
 
         card.innerHTML = `
-            <img src="${cat.icon}" alt="${cat.nombre}">
-            <p>${cat.nombre}</p>
+            <img src="${cat.icon}" alt="${cat.name}">
+            <p>${cat.name}</p>
         `;
 
         card.addEventListener('click', () => {
@@ -38,9 +38,9 @@ function generateHomeNavButtons() {
     
     navCont.innerHTML = ''; 
 
-    categorias.forEach(cat => {
+    categories.forEach(cat => {
         const button = document.createElement("button");
-        button.textContent = cat.nombre;
+        button.textContent = cat.name;
         button.onclick = () => {
             router.goTo(`home?categoria=${cat.key}`);
         };

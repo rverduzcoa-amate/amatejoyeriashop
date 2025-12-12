@@ -244,7 +244,7 @@ function goToNextCategoryVideo() {
 const router = {
     views: {
         home: null,
-        categorias: null,
+        categories: null,
         novedades: null,
         product: null,
         busqueda: null,
@@ -256,7 +256,7 @@ const router = {
         // Inicialización de vistas
         if (!this.views.home) {
             this.views.home = document.getElementById('vista-home');
-            this.views.categorias = document.getElementById('vista-categorias');
+            this.views.categories = document.getElementById('vista-categorias');
             this.views.novedades = document.getElementById('vista-novedades');
             this.views.product = document.getElementById('vista-product');
             this.views.busqueda = document.getElementById('vista-busqueda'); 
@@ -292,7 +292,7 @@ const router = {
                 if (productsCont) productsCont.innerHTML = ""; 
             }
 
-            if (viewName === 'categorias') {
+            if (viewName === 'categories') {
                 // Cargar grid de categorías
                 if (typeof loadCategoriesView === 'function') loadCategoriesView();
             }
