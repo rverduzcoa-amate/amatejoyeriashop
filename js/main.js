@@ -27,6 +27,61 @@ let videoCarouselContainerElement = null;
 
 let searchProductTimeout = null;
 
+// Fallback UI when autoplay is blocked (battery saver / browser policy)
+let globalPlayOverlay = null;
+let globalPlayOverlayShown = false;
+
+function showGlobalPlayOverlay() {
+    if (globalPlayOverlayShown) return;
+    globalPlayOverlayShown = true;
+    globalPlayOverlay = document.createElement('div');
+    globalPlayOverlay.id = 'global-play-overlay';
+    globalPlayOverlay.style.position = 'fixed';
+    globalPlayOverlay.style.left = '0';
+    globalPlayOverlay.style.top = '0';
+    globalPlayOverlay.style.right = '0';
+    globalPlayOverlay.style.bottom = '0';
+    globalPlayOverlay.style.display = 'flex';
+    globalPlayOverlay.style.alignItems = 'center';
+    globalPlayOverlay.style.justifyContent = 'center';
+    globalPlayOverlay.style.background = 'rgba(0,0,0,0.35)';
+    globalPlayOverlay.style.zIndex = '9999';
+    globalPlayOverlay.innerHTML = `
+        <button id="global-play-button" style="appearance:none;border:none;background:#fff;padding:18px 24px;border-radius:10px;font-size:18px;">Play videos</button>
+    `;
+
+    globalPlayOverlay.addEventListener('click', userGesturePlayAll);
+    document.body.appendChild(globalPlayOverlay);
+}
+
+function hideGlobalPlayOverlay() {
+    if (!globalPlayOverlayShown) return;
+    globalPlayOverlayShown = false;
+    if (globalPlayOverlay && globalPlayOverlay.parentNode) globalPlayOverlay.parentNode.removeChild(globalPlayOverlay);
+    globalPlayOverlay = null;
+}
+
+function userGesturePlayAll() {
+    // Called from a user gesture (click/tap). Try to play all video elements.
+    try {
+        if (Array.isArray(videoElements)) {
+            videoElements.forEach(item => {
+                try { item.video.muted = true; item.video.play(); } catch (e) {}
+            });
+        }
+
+        if (Array.isArray(categoryVideoElements)) {
+            categoryVideoElements.forEach(item => {
+                try { item.video.muted = true; item.video.play(); } catch (e) {}
+            });
+        }
+    } finally {
+        hideGlobalPlayOverlay();
+        // Start intervals if needed
+        startCategoryVideoInterval();
+    }
+}
+
 // Small util to escape HTML for attribute values
 function escapeHtml(str) {
     return String(str)
@@ -89,10 +144,10 @@ function playCurrentVideo() {
     
     setTimeout(() => {
         currentItem.video.play().catch(error => {
-            // Es normal que falle autoplay en móviles si no hay interacción, no es un error crítico
-            // console.warn("Autoplay bloqueado.", error.name);
+            // Autoplay blocked (battery saver / browser policy). Show a tap-to-play overlay.
+            showGlobalPlayOverlay();
         });
-    }, 50); 
+    }, 50);
 }
 
 function goToNextVideo() {
@@ -228,9 +283,10 @@ function playCurrentCategoryVideo() {
     
     setTimeout(() => {
         currentItem.video.play().catch(error => {
-            // console.warn("Autoplay categoría bloqueado.", error.name);
+            // Autoplay blocked for category video; show overlay so user can enable playback.
+            showGlobalPlayOverlay();
         });
-    }, 50); 
+    }, 50);
 }
 
 function goToNextCategoryVideo() {
@@ -362,8 +418,19 @@ const router = {
     ESCUCHADORES
 ========================== */
 window.addEventListener('hashchange', () => router.handleRoute());
+window.addEventListener('hashchange', () => router.handleRoute());
 window.addEventListener('DOMContentLoaded', () => {
     router.handleRoute();
+
+    // Try to enable playback on first user gesture (touch or click).
+    function firstGestureHandler() {
+        try { userGesturePlayAll(); } catch (e) {}
+        document.removeEventListener('touchstart', firstGestureHandler, { passive: true });
+        document.removeEventListener('click', firstGestureHandler);
+    }
+
+    document.addEventListener('touchstart', firstGestureHandler, { passive: true });
+    document.addEventListener('click', firstGestureHandler);
 });
 
 /* ==========================
