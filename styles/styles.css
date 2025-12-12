@@ -51,7 +51,7 @@ body {
 
 /* --- Navegación Izquierda (Botones: Inicio y Catálogo) --- */
 .header-nav {
-    /* **CAMBIOS CLAVE PARA FORZAR VISIBILIDAD** */
+    /* **FORZANDO VISIBILIDAD** */
     display: flex !important; /* Aseguramos que Flexbox esté activo */
     z-index: 100;             /* Aseguramos que esté por encima */
     
@@ -75,10 +75,9 @@ body {
     /* FIX: Aseguramos que los botones SIEMPRE se muestren por defecto */
     display: block !important; 
 }
+
 /* --- Logo Central --- */
 .header-logo {
-    /* El logo ya no necesita position: absolute; si los elementos laterales son flexibles */
-    /* Lo mantenemos como estaba, pero ajustamos el z-index */
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -152,9 +151,9 @@ body {
 
 
 /* =======================================================
-    AJUSTES DE ACCESIBILIDAD/FUENTE GRANDE
+    AJUSTES DE ACCESIBILIDAD/FUENTE GRANDE (REVISADO)
     ======================================================= */
-/* Mantenemos tu lógica para fuentes grandes, ajustando el padding */
+/* Mantenemos tu lógica, pero eliminamos el display: none para que los botones sean visibles. */
 
 @media (max-width: 500px) and (min-resolution: 2dppx) and (min-aspect-ratio: 1/2) {
     /* Si el usuario ha AUMENTADO el TAMAÑO DE FUENTE, se fuerza la simplificación. */
@@ -166,17 +165,21 @@ body {
         padding-top: 5px;
     }
 
-    /* Ocultamos ambos botones de navegación para evitar el desborde */
-    .nav-button {
+    /* *************************************************************** */
+    /* *** CORRECCIÓN: SE ELIMINA LA OCULTACIÓN FORZADA DEL BOTÓN **** */
+    /* *************************************************************** */
+    /* .nav-button {
         display: none !important;
-    }
+    } */
     
-    /* Reducimos el tamaño del logo */
-    .logo-text {
+    /* *************************************************************** */
+    /* *** CORRECCIÓN: SE ELIMINA LA REDUCCIÓN FORZADA DEL LOGO ****** */
+    /* *************************************************************** */
+    /* .logo-text {
         font-size: 16px !important;
-    }
+    } */
     
-    /* Simplificamos los iconos de acción */
+    /* Simplificamos los iconos de acción (ESTO SE MANTIENE) */
     .action-button {
         padding: 4px;
         font-size: 14px;
