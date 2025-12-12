@@ -64,12 +64,14 @@ body {
     background: none;
     border: none;
     color: #333;
-    /* *** AJUSTE: AUMENTAMOS TAMAÑO DE FUENTE *** */
     font-size: 16px; 
     font-weight: 600;
     cursor: pointer;
-    /* *** AJUSTE: PADDING SIMÉTRICO PARA ALINEACIÓN *** */
-    padding: 8px 10px; 
+    
+    /* *** AJUSTE CRÍTICO DE ALINEACIÓN (Texto) *** */
+    line-height: 0; 
+    padding: 10px 10px; 
+    
     white-space: nowrap;
     display: block !important; 
 }
@@ -91,8 +93,11 @@ body {
     font-weight: bold;
     color: #333;
     font-family: "Ámate", 'Playfair Display', serif;
-    line-height: 1;
+    line-height: 1; /* Valor base de línea para el texto */
     cursor: pointer;
+    /* *** AJUSTE FINAL PARA ALINEACIÓN: Agregamos un ligero padding vertical al logo *** */
+    /* Esto compensa el espacio extra que la fuente personalizada puede crear */
+    padding-top: 2px;
 }
 
 /* --- Acciones Derecha (Iconos) --- */
@@ -106,13 +111,15 @@ body {
 }
 
 .action-button {
-    /* ... reglas existentes ... */
+    background: none;
+    border: none;
+    color: #333;
     font-size: 20px; 
     cursor: pointer;
     
-    /* *** AJUSTE CRÍTICO DE ALINEACIÓN *** */
-    line-height: 0;
-    padding: 11px 9px; /* Ajuste fino de padding para centrar íconos de 20px */
+    /* *** AJUSTE CRÍTICO DE ALINEACIÓN (Íconos) *** */
+    line-height: 0; /* Para forzar que el ícono se centre con el padding */
+    padding: 11px 9px; 
     
     display: flex;
     align-items: center;
@@ -122,36 +129,28 @@ body {
 /* === RESPONSIVE: Ajustes para Pantallas Pequeñas (< 450px) === */
 
 @media (max-width: 450px) {
-    /* ** NOTA: Se eliminan las reducciones agresivas de .nav-button para mantener el tamaño de 16px ** */
+    /* *** CORRECCIÓN: Se aplica el line-height y padding de nuevo para override *** */
     .nav-button {
-    /* ... reglas existentes ... */
-    font-size: 16px; 
-    font-weight: 600;
-    cursor: pointer;
-    
-    /* *** AJUSTE CRÍTICO DE ALINEACIÓN *** */
-    line-height: 0; 
-    padding: 10px 10px; /* Incrementamos el padding vertical para centrar */
-    
-    white-space: nowrap;
-    display: block !important; 
+        line-height: 0; 
+        padding: 8px 8px; /* Reducción ligera del padding en móvil para espacio */
+        font-size: 14px;
     }
+    
     .header-nav, .header-actions {
-        /* Se mantiene el ancho limitado para evitar colisiones con el logo */
-        max-width: 30%; 
+        max-width: 35%; /* Damos un poco más de espacio a los botones */
     }
     .logo-text {
-        /* Se mantiene la reducción para evitar colisiones en pantallas pequeñas */
         font-size: 20px;
+        padding-top: 1px; /* Ajuste más ligero de logo en móvil */
     }
     .action-button {
         padding: 6px;
-        font-size: 18px; /* Reducción ligera del ícono */
+        font-size: 18px; 
     }
-
+    
     /* Regla para el móvil MÁS ESTRECHO (donde el botón de inicio se oculta) */
     @media (max-width: 350px) {
-        /* Si es demasiado angosto, ocultamos el botón de 'Inicio' para salvar el layout */
+        /* Ocultamos el botón de 'Inicio' para salvar el layout */
         .mobile-hide {
             display: none !important; 
         }
@@ -166,19 +165,19 @@ body {
 @media (max-width: 500px) and (min-resolution: 2dppx) and (min-aspect-ratio: 1/2) {
     /* Si el usuario ha AUMENTADO el TAMAÑO DE FUENTE, se fuerza la simplificación. */
 
-    .main-header { height: 70px; } /* Damos más altura */
+    .main-header { height: 70px; } 
     .header-content {
         height: 70px;
         align-items: flex-start;
         padding-top: 5px;
     }
 
-    /* *** CORRECCIÓN CRÍTICA: ELIMINAMOS LA REGLA QUE OCULTABA LOS BOTONES *** */
+    /* *************************************************************** */
+    /* *** SE MANTIENEN COMENTADAS LAS REGLAS DE OCULTACIÓN/REDUCCIÓN *** */
+    /* *************************************************************** */
     /* .nav-button {
         display: none !important;
     } */
-    
-    /* *** CORRECCIÓN CRÍTICA: ELIMINAMOS LA REGLA QUE REDUCÍA EL LOGO *** */
     /* .logo-text {
         font-size: 16px !important;
     } */
