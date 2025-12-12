@@ -31,8 +31,21 @@ let searchProductTimeout = null;
 let globalPlayOverlay = null;
 let globalPlayOverlayShown = false;
 
+// LocalStorage key to remember that autoplay was allowed by user
+const AUTOPLAY_FLAG_KEY = 'amate_autoplay_allowed_v1';
+
+function isAutoplayAllowed() {
+    try { return localStorage.getItem(AUTOPLAY_FLAG_KEY) === '1'; } catch (e) { return false; }
+}
+
+function setAutoplayAllowed() {
+    try { localStorage.setItem(AUTOPLAY_FLAG_KEY, '1'); } catch (e) { /* noop */ }
+}
+
 function showGlobalPlayOverlay() {
     if (globalPlayOverlayShown) return;
+    // Do not show overlay if user previously allowed autoplay
+    if (isAutoplayAllowed()) return;
     globalPlayOverlayShown = true;
     globalPlayOverlay = document.createElement('div');
     globalPlayOverlay.id = 'global-play-overlay';
@@ -66,13 +79,21 @@ function userGesturePlayAll() {
     try {
         if (Array.isArray(videoElements)) {
             videoElements.forEach(item => {
-                try { item.video.muted = true; item.video.play(); } catch (e) {}
+                try {
+                    item.video.muted = true;
+                    const p = item.video.play();
+                    if (p && typeof p.then === 'function') p.then(()=>setAutoplayAllowed()).catch(()=>{});
+                } catch (e) {}
             });
         }
 
         if (Array.isArray(categoryVideoElements)) {
             categoryVideoElements.forEach(item => {
-                try { item.video.muted = true; item.video.play(); } catch (e) {}
+                try {
+                    item.video.muted = true;
+                    const p2 = item.video.play();
+                    if (p2 && typeof p2.then === 'function') p2.then(()=>setAutoplayAllowed()).catch(()=>{});
+                } catch (e) {}
             });
         }
     } finally {
@@ -144,10 +165,13 @@ function playCurrentVideo() {
     currentItem.slide.classList.add('active');
     
     setTimeout(() => {
-        currentItem.video.play().catch(error => {
-            // Autoplay blocked (battery saver / browser policy). Show a tap-to-play overlay.
-            showGlobalPlayOverlay();
-        });
+        const p = currentItem.video.play();
+        if (p && typeof p.then === 'function') {
+            p.then(()=>{ setAutoplayAllowed(); hideGlobalPlayOverlay(); }).catch(error => {
+                // Autoplay blocked (battery saver / browser policy). Show a tap-to-play overlay.
+                showGlobalPlayOverlay();
+            });
+        }
     }, 50);
 }
 
@@ -266,6 +290,8 @@ function cleanupHome() {
             videoCarouselContainerElement.removeEventListener('touchend', handleTouchEnd);
             videoCarouselContainerElement = null;
         }
+        // Ensure overlay is hidden when leaving home
+        try { hideGlobalPlayOverlay(); } catch (e) {}
     } catch (err) {
         // noop
     }
@@ -283,10 +309,13 @@ function playCurrentCategoryVideo() {
     currentItem.slide.classList.add('active');
     
     setTimeout(() => {
-        currentItem.video.play().catch(error => {
-            // Autoplay blocked for category video; show overlay so user can enable playback.
-            showGlobalPlayOverlay();
-        });
+        const p = currentItem.video.play();
+        if (p && typeof p.then === 'function') {
+            p.then(()=>{ setAutoplayAllowed(); hideGlobalPlayOverlay(); }).catch(error => {
+                // Autoplay blocked for category video; show overlay so user can enable playback.
+                showGlobalPlayOverlay();
+            });
+        }
     }, 50);
 }
 
