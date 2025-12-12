@@ -106,14 +106,14 @@ body {
 }
 
 .action-button {
-    background: none;
-    border: none;
-    color: #333;
-    /* *** AJUSTE: AUMENTAMOS TAMAÑO DE ÍCONO *** */
+    /* ... reglas existentes ... */
     font-size: 20px; 
     cursor: pointer;
-    /* *** AJUSTE: PADDiNG SIMÉTRICO PARA ALINEACIÓN *** */
-    padding: 9px; 
+    
+    /* *** AJUSTE CRÍTICO DE ALINEACIÓN *** */
+    line-height: 0;
+    padding: 11px 9px; /* Ajuste fino de padding para centrar íconos de 20px */
+    
     display: flex;
     align-items: center;
     justify-content: center;
@@ -123,7 +123,19 @@ body {
 
 @media (max-width: 450px) {
     /* ** NOTA: Se eliminan las reducciones agresivas de .nav-button para mantener el tamaño de 16px ** */
+    .nav-button {
+    /* ... reglas existentes ... */
+    font-size: 16px; 
+    font-weight: 600;
+    cursor: pointer;
     
+    /* *** AJUSTE CRÍTICO DE ALINEACIÓN *** */
+    line-height: 0; 
+    padding: 10px 10px; /* Incrementamos el padding vertical para centrar */
+    
+    white-space: nowrap;
+    display: block !important; 
+    }
     .header-nav, .header-actions {
         /* Se mantiene el ancho limitado para evitar colisiones con el logo */
         max-width: 30%; 
