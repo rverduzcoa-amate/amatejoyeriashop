@@ -37,7 +37,7 @@ if(!fs.existsSync(dirPath)){
   process.exit(1);
 }
 
-const files = fs.readdirSync(dirPath).filter(f => /\.jpe?g$/i.test(f));
+const files = fs.readdirSync(dirPath).filter(f => /\.(jpe?g|png)$/i.test(f));
 if(files.length === 0){
   console.log('No jpg files found in', dir);
   process.exit(0);
@@ -76,7 +76,8 @@ for(const [canonical, groupFiles] of groups){
 
   const id = `${category.replace(/s$/i,'')}_${sanitizeId(canonical)}`;
   const nombre = humanize(canonical);
-  const imgField = relPaths.length > 1 ? JSON.stringify(relPaths) : `"${relPaths[0]}"`;
+  // Always use an array for the `img` field to keep data consistent
+  const imgField = JSON.stringify(relPaths);
   const entry = `{ id: "${id}", nombre: "${nombre}", precio: "${price}", img: ${imgField} }`;
   toAdd.push(entry);
 }

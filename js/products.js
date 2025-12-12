@@ -19,8 +19,7 @@ const products = {
         { id: "pulsera0018", nombre: "Pulsera Inox Plata", precio: "$159", img: ["media/img/pulseras/pulseraPlateadaConchas.jpg","media/img/pulseras/pulseraPlateadaConchas2.jpg"] },
         { id: "pulsera0019", nombre: "Pulsera Inox Plata", precio: "$159", img: "media/img/pulseras/pulseraPlateadaEsla.jpg" },
         { id: "pulsera0020", nombre: "Pulsera Inox Plata", precio: "$159", img: "media/img/pulseras/pulseraPlateadaLibra.jpg" },
-        { id: "pulsera0021", nombre: "Pulsera Inox Plata", precio: "$159", img: "media/img/pulseras/pulserasDoaradas.jpg" },,
-        { id: "pulsera_img_3163", nombre: "IMG 3163", precio: "$299", img: ["media/img/pulseras/IMG_3163(1).jpg","media/img/pulseras/IMG_3163.jpg"] }
+        { id: "pulsera0021", nombre: "Pulsera Inox Plata", precio: "$159", img: "media/img/pulseras/pulserasDoaradas.jpg" }
     ],
     cadenas: [
         { id: "cadena001", nombre: "Cadena Acero 55cm", precio: "$249", img: "media/img/cadenas/cadenaAceroInox.jpg" },
@@ -125,14 +124,15 @@ const products = {
         { id: "piercing001", nombre: "Piercing Acero", precio: "$199", img: "" }
     ],
     relojes: [
-        { id: "reloj001", nombre: "Reloj Pleateado", precio: "$199", img: ["media/img/relojs/relojPlateado.jpg","media/img/relojs/relojPlateado2.jpg","media/img/relojs/relojPlateado3.jpg"] },
-        { id: "reloje_paulina_balderas", nombre: "Paulina Balderas", precio: "$299", img: ["media/img/relojs/Paulina.Balderas (1).jpg","media/img/relojs/Paulina.Balderas (2).jpg"] },
-        { id: "reloje_paulina_balderas", nombre: "Paulina Balderas", precio: "$299", img: "media/img/relojs/Paulina.Balderas.jpg" },
-        { id: "reloje_fullbody", nombre: "FullBody", precio: "$299", img: ["media/img/relojs/fullBody(1).jpg","media/img/relojs/fullBody(2).jpg","media/img/relojs/fullBody.jpg"] },
-        { id: "reloje_bp", nombre: "Bp", precio: "$299", img: ["media/img/relojs/bp(1).jpg","media/img/relojs/bp(2).jpg","media/img/relojs/bp.jpg"] }
+        { id: "reloj001", nombre: "Reloj Pleateado", precio: "$199", img: ["media/img/relojs/relojPlateado.jpg", "media/img/relojs/relojPlateado2.jpg", "media/img/relojs/relojPlateado3.jpg"] },
+        { id: "reloje_paulina_balderas", nombre: "Paulina Balderas", precio: "$299", img: ["media/img/relojs/Paulina.Balderas (1).jpg", "media/img/relojs/Paulina.Balderas (2).jpg", "media/img/relojs/Paulina.Balderas.jpg"] },
+        { id: "reloje_fullbody", nombre: "FullBody", precio: "$299", img: ["media/img/relojs/fullBody(1).jpg", "media/img/relojs/fullBody(2).jpg", "media/img/relojs/fullBody.jpg"] },
+        { id: "reloje_bp", nombre: "Bp", precio: "$299", img: ["media/img/relojs/bp(1).jpg", "media/img/relojs/bp(2).jpg", "media/img/relojs/bp.jpg"] }
     ]
 };
 //Commands to add products automatically can be found in tools/auto_insert_products_fixed.js
 //Examples:
 //node tools/auto_insert_products_fixed.js --category aretes --dir media/img/aretes --price '$299' --dry-run
 //node tools/auto_insert_products_fixed.js --category aretes --dir media/img/aretes --price '$299' --no-backup
+
+//node --check tools/auto_insert_products_fixed.js; node --check js/products.js
