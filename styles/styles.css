@@ -43,7 +43,7 @@ body {
 .header-content {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: center; /* Crucial para centrar verticalmente */
     width: 100%;
     height: 100%;
     padding: 0 8px;
@@ -51,15 +51,12 @@ body {
 
 /* --- Navegación Izquierda (Botones: Inicio y Catálogo) --- */
 .header-nav {
-    /* **FORZANDO VISIBILIDAD** */
-    display: flex !important; /* Aseguramos que Flexbox esté activo */
-    z-index: 100;             /* Aseguramos que esté por encima */
-    
+    display: flex !important;
+    z-index: 100; 
     align-items: center;
     gap: 5px;
-    /* Usamos flex-grow: 0 y flex-shrink: 0 para que esta sección no ocupe más espacio del necesario */
     flex: 0 0 auto; 
-    margin-right: auto; /* Mueve el grupo a la izquierda */
+    margin-right: auto;
 }
 
 /* Los botones que se ocultaban antes (.mobile-hide) */
@@ -67,12 +64,13 @@ body {
     background: none;
     border: none;
     color: #333;
-    font-size: 16px;
+    /* *** AJUSTE: AUMENTAMOS TAMAÑO DE FUENTE *** */
+    font-size: 16px; 
     font-weight: 600;
     cursor: pointer;
-    padding: 8px 10px;
+    /* *** AJUSTE: PADDING SIMÉTRICO PARA ALINEACIÓN *** */
+    padding: 8px 10px; 
     white-space: nowrap;
-    /* FIX: Aseguramos que los botones SIEMPRE se muestren por defecto */
     display: block !important; 
 }
 
@@ -85,7 +83,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 15; /* Aseguramos que esté por encima de todo */
+    z-index: 15;
 }
 
 .logo-text {
@@ -101,20 +99,21 @@ body {
 .header-actions {
     display: flex;
     align-items: center;
-    /* Usamos flex-grow: 0 y flex-shrink: 0 para que esta sección no ocupe más espacio del necesario */
     flex: 0 0 auto;
     justify-content: flex-end;
     gap: 2px; 
-    margin-left: auto; /* Mueve el grupo a la derecha */
+    margin-left: auto;
 }
 
 .action-button {
     background: none;
     border: none;
     color: #333;
-    font-size: 18px;
+    /* *** AJUSTE: AUMENTAMOS TAMAÑO DE ÍCONO *** */
+    font-size: 20px; 
     cursor: pointer;
-    padding: 8px; /* Área táctil decente */
+    /* *** AJUSTE: PADDiNG SIMÉTRICO PARA ALINEACIÓN *** */
+    padding: 9px; 
     display: flex;
     align-items: center;
     justify-content: center;
@@ -123,24 +122,22 @@ body {
 /* === RESPONSIVE: Ajustes para Pantallas Pequeñas (< 450px) === */
 
 @media (max-width: 450px) {
-    /* Si el espacio es estrecho, reducimos el tamaño de todo */
-    /*.nav-button {
-        font-size: 11px; /* Más pequeños para que quepan 
-        padding: 5px 4px;
-    }*/
+    /* ** NOTA: Se eliminan las reducciones agresivas de .nav-button para mantener el tamaño de 16px ** */
+    
     .header-nav, .header-actions {
-        /* Se limita el ancho de los contenedores laterales para que el logo tenga espacio */
+        /* Se mantiene el ancho limitado para evitar colisiones con el logo */
         max-width: 30%; 
     }
     .logo-text {
+        /* Se mantiene la reducción para evitar colisiones en pantallas pequeñas */
         font-size: 20px;
     }
     .action-button {
         padding: 6px;
-        font-size: 16px;
+        font-size: 18px; /* Reducción ligera del ícono */
     }
 
-    /* Regla para el móvil MÁS ESTRECHO (donde el botón de inicio se ocultaba originalmente) */
+    /* Regla para el móvil MÁS ESTRECHO (donde el botón de inicio se oculta) */
     @media (max-width: 350px) {
         /* Si es demasiado angosto, ocultamos el botón de 'Inicio' para salvar el layout */
         .mobile-hide {
@@ -151,9 +148,8 @@ body {
 
 
 /* =======================================================
-    AJUSTES DE ACCESIBILIDAD/FUENTE GRANDE (REVISADO)
+    AJUSTES DE ACCESIBILIDAD/FUENTE GRANDE (CORREGIDO)
     ======================================================= */
-/* Mantenemos tu lógica, pero eliminamos el display: none para que los botones sean visibles. */
 
 @media (max-width: 500px) and (min-resolution: 2dppx) and (min-aspect-ratio: 1/2) {
     /* Si el usuario ha AUMENTADO el TAMAÑO DE FUENTE, se fuerza la simplificación. */
@@ -165,21 +161,17 @@ body {
         padding-top: 5px;
     }
 
-    /* *************************************************************** */
-    /* *** CORRECCIÓN: SE ELIMINA LA OCULTACIÓN FORZADA DEL BOTÓN **** */
-    /* *************************************************************** */
+    /* *** CORRECCIÓN CRÍTICA: ELIMINAMOS LA REGLA QUE OCULTABA LOS BOTONES *** */
     /* .nav-button {
         display: none !important;
     } */
     
-    /* *************************************************************** */
-    /* *** CORRECCIÓN: SE ELIMINA LA REDUCCIÓN FORZADA DEL LOGO ****** */
-    /* *************************************************************** */
+    /* *** CORRECCIÓN CRÍTICA: ELIMINAMOS LA REGLA QUE REDUCÍA EL LOGO *** */
     /* .logo-text {
         font-size: 16px !important;
     } */
     
-    /* Simplificamos los iconos de acción (ESTO SE MANTIENE) */
+    /* Simplificamos los iconos de acción */
     .action-button {
         padding: 4px;
         font-size: 14px;
