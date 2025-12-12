@@ -46,57 +46,65 @@ body {
     align-items: center;
     width: 100%;
     height: 100%;
-    padding: 0 8px; /* Reducido para ganar espacio */
+    padding: 0 8px;
 }
 
-/* --- Navegación Izquierda --- */
+/* --- Navegación Izquierda (Botones: Inicio y Catálogo) --- */
 .header-nav {
     display: flex;
     align-items: center;
-    gap: 5px; /* Menos espacio entre botones */
-    flex: 1; /* Ocupa espacio disponible */
+    gap: 5px;
+    /* Usamos flex-grow: 0 y flex-shrink: 0 para que esta sección no ocupe más espacio del necesario */
+    flex: 0 0 auto; 
+    margin-right: auto; /* Mueve el grupo a la izquierda */
 }
 
+/* Los botones que se ocultaban antes (.mobile-hide) */
 .nav-button {
     background: none;
     border: none;
     color: #333;
-    font-size: 14px; /* Tamaño base más seguro */
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     padding: 5px 8px;
-    white-space: nowrap; /* Evita que el texto se rompa en dos líneas */
+    white-space: nowrap;
+    /* FIX: Aseguramos que los botones SIEMPRE se muestren por defecto */
+    display: block !important; 
 }
 
 /* --- Logo Central --- */
 .header-logo {
-    position: absolute; /* Centrado absoluto */
+    /* El logo ya no necesita position: absolute; si los elementos laterales son flexibles */
+    /* Lo mantenemos como estaba, pero ajustamos el z-index */
+    position: absolute;
     left: 50%;
     transform: translateX(-50%);
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10; /* Asegura que esté por encima si hay solapamiento leve */
+    z-index: 15; /* Aseguramos que esté por encima de todo */
 }
 
 .logo-text {
-    font-size: 24px; /* Tamaño más equilibrado para móvil */
+    font-size: 24px; 
     font-weight: bold;
     color: #333;
-    /* Usa serif como fallback si la fuente local falla */
-    font-family: "Ámate", 'Playfair Display', serif; 
+    font-family: "Ámate", 'Playfair Display', serif;
     line-height: 1;
     cursor: pointer;
 }
 
-/* --- Acciones Derecha --- */
+/* --- Acciones Derecha (Iconos) --- */
 .header-actions {
     display: flex;
     align-items: center;
-    justify-content: flex-end; /* Alinea a la derecha */
-    gap: 2px; /* Espacio mínimo entre iconos */
-    flex: 1;
+    /* Usamos flex-grow: 0 y flex-shrink: 0 para que esta sección no ocupe más espacio del necesario */
+    flex: 0 0 auto;
+    justify-content: flex-end;
+    gap: 2px; 
+    margin-left: auto; /* Mueve el grupo a la derecha */
 }
 
 .action-button {
@@ -111,46 +119,41 @@ body {
     justify-content: center;
 }
 
-/* === RESPONSIVE: Ajustes para Pantallas Pequeñas (< 380px) === */
-@media (max-width: 380px) {
+/* === RESPONSIVE: Ajustes para Pantallas Pequeñas (< 450px) === */
+
+@media (max-width: 450px) {
+    /* Si el espacio es estrecho, reducimos el tamaño de todo */
     .nav-button {
-        font-size: 12px;
-        padding: 5px;
+        font-size: 11px; /* Más pequeños para que quepan */
+        padding: 5px 4px;
+    }
+    .header-nav, .header-actions {
+        /* Se limita el ancho de los contenedores laterales para que el logo tenga espacio */
+        max-width: 30%; 
     }
     .logo-text {
-        font-size: 20px; 
+        font-size: 20px;
     }
     .action-button {
-        padding: 6px; 
+        padding: 6px;
         font-size: 16px;
     }
-    /* FIX 1: Ocultar solo el botón 'Inicio' en dispositivos EXTREMADAMENTE estrechos (para dar espacio a 'Catálogo') */
-    .mobile-hide {
-        display: none !important; 
+
+    /* Regla para el móvil MÁS ESTRECHO (donde el botón de inicio se ocultaba originalmente) */
+    @media (max-width: 350px) {
+        /* Si es demasiado angosto, ocultamos el botón de 'Inicio' para salvar el layout */
+        .mobile-hide {
+            display: none !important; 
+        }
     }
 }
 
 
 /* =======================================================
-    AJUSTES DE ACCESIBILIDAD (Usuarios con Fuente GRANDE)
-    --- ELIMINAMOS REGLAS QUE OCULTABAN INICIO DE FORMA INNECESARIA ---
+    AJUSTES DE ACCESIBILIDAD/FUENTE GRANDE
     ======================================================= */
+/* Mantenemos tu lógica para fuentes grandes, ajustando el padding */
 
-/* ELIMINAMOS: El bloque original que ocultaba .mobile-hide entre 381px y 450px */
-
-/* Este bloque es el crítico para el DESBORDE por ACCESIBILIDAD/ZOOM DE FUENTE */
-/* FIX 1: Simplificamos esta media query, la original era demasiado específica. */
-/* Se activa en móviles donde la fuente es grande y hay riesgo de desborde */
-@media (max-width: 450px) and (min-width: 381px) {
-    /* Aquí permitimos que .mobile-hide (Inicio) se muestre, forzando la simplificación */
-    .nav-button {
-        font-size: 11px; /* Reducción agresiva de la fuente para que quepan */
-        padding: 4px;
-    }
-}
-
-/* Simplificación extrema forzada por aumento de fuente (usando la altura del header como proxy) */
-/* Si se detecta desborde o ajustes de accesibilidad, simplificamos radicalmente. */
 @media (max-width: 500px) and (min-resolution: 2dppx) and (min-aspect-ratio: 1/2) {
     /* Si el usuario ha AUMENTADO el TAMAÑO DE FUENTE, se fuerza la simplificación. */
 
@@ -182,7 +185,6 @@ body {
         padding-top: 70px;
     }
 }
-
 
 /* =====================================
     CONTENIDO PRINCIPAL
