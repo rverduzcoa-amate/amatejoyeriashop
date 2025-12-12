@@ -43,8 +43,7 @@ const products = {
         { id: "cadena019", nombre: "Cadena Acero 55cm", precio: "$249", img: "media/img/cadenas/cadenaAceroInoxLetra2.jpg" },
         { id: "cadena020", nombre: "Cadena Acero 55cm", precio: "$249", img: "media/img/cadenas/cadenaAceroInoxLetraLisa.jpg" },
         { id: "cadena021", nombre: "Cadena Acero 55cm", precio: "$249", img: "media/img/cadenas/cadenaAceroInoxLetraRellena.jpg" },
-        { id: "cadena022", nombre: "Cadena Acero 55cm", precio: "$249", img: ["media/img/cadenas/cadenaAceroInoxPlateadaDijeChonky.jpg","media/img/cadenas/cadenaAceroInoxPlateadaDijeChonky2.jpg"] },
-        { id: "cadena023", nombre: "Cadena Acero 55cm", precio: "$249", img: "" },
+        { id: "cadena022", nombre: "Cadena Acero 55cm", precio: "$249", img: ["media/img/cadenas/cadenaAceroInoxPlateadaDijeChonky.jpg","media/img/cadenas/cadenaAceroInoxPlateadaDijeChonky2.jpg"] }
     ],
     layers: [
         { id: "layers001", nombre: "Layer Gold", precio: "$199", img: "media/img/layers/aceroInoxLayerBolitas.jpg" },
