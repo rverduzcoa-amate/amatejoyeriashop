@@ -246,7 +246,7 @@ const router = {
         home: null,
         categorias: null,
         novedades: null,
-        producto: null,
+        product: null,
         busqueda: null,
         cuenta: null, 
         cart: null
@@ -258,7 +258,7 @@ const router = {
             this.views.home = document.getElementById('vista-home');
             this.views.categorias = document.getElementById('vista-categorias');
             this.views.novedades = document.getElementById('vista-novedades');
-            this.views.producto = document.getElementById('vista-producto');
+            this.views.product = document.getElementById('vista-product');
             this.views.busqueda = document.getElementById('vista-busqueda'); 
             this.views.cuenta = document.getElementById('vista-cuenta'); 
             this.views.cart = document.getElementById('vista-cart');
@@ -326,8 +326,8 @@ const router = {
         let viewToShow = route || 'home';
 
         // Manejo de parámetros especiales
-            if (viewToShow === 'producto' && params.has('id')) {
-            this.showView('producto');
+            if (viewToShow === 'product' && params.has('id')) {
+            this.showView('product');
             if (typeof showProductDetail === 'function') {
                 showProductDetail(params.get('id'));
             }
@@ -476,7 +476,7 @@ function showCategory(category) {
         }
 
         htmlContent.push(`
-            <div class="card card-link" onclick="router.goTo('producto?id=${prod.id}')" style="cursor: pointer;">
+            <div class="card card-link" onclick="router.goTo('product?id=${prod.id}')" style="cursor: pointer;">
                 ${imgsHTML}
                 <h3>${prod.nombre || 'Producto'}</h3>
                 <p class="precio">${prod.precio || ''}</p>
@@ -526,7 +526,7 @@ function searchProduct() {
         resultados.forEach((prod) => {
             const imgSrc = Array.isArray(prod.img) ? prod.img[0] : prod.img;
             htmlContent.push(`
-                <div class="card card-link" onclick="router.goTo('producto?id=${prod.id}')">
+                <div class="card card-link" onclick="router.goTo('product?id=${prod.id}')">
                     <div class="carousel">
                         <div class="carousel-images">
                             <img src="${imgSrc}" class="active" alt="${escapeHtml(prod.nombre || 'Product')}">

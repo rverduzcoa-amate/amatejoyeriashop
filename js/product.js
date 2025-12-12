@@ -3,7 +3,7 @@
  * @param {string} id - El ID del producto a buscar.
  */
 function showProductDetail(id) {
-    const detalleContenedor = document.getElementById("producto-detalle");
+    const detalleContenedor = document.getElementById("product-detail");
     if (!detalleContenedor) return;
     
     detalleContenedor.innerHTML = '<p>Cargando producto...</p>';

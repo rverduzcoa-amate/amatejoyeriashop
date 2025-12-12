@@ -21,9 +21,9 @@ function loadNewArrivals() {
         const allImgs = Array.isArray(prod.img) ? prod.img : [prod.img];
         const imgSrc = allImgs[0] || '/media/img/placeholder.jpg'; 
 
-        htmlContent.push(`
+            htmlContent.push(`
             <div class="card show">
-                <a href="#producto?id=${prod.id}" class="card-link" onclick="router.goTo('producto?id=${prod.id}'); return false;">
+                <a href="#product?id=${prod.id}" class="card-link" onclick="router.goTo('product?id=${prod.id}'); return false;">
                     <div class="carousel"> 
                         <div class="carousel-images">
                             <img src="${imgSrc}" alt="${escapeHtml(prod.nombre)}" class="active">
