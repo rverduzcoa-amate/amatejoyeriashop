@@ -274,13 +274,13 @@ const router = {
         
         // Manejo de home con categoría seleccionada
         if (viewToShow === 'home' && params.has('categoria')) {
-             this.showView('home');
-             const categoria = params.get('categoria');
-             if (typeof showCategory === 'function') {
-                 // Aquí ocultamos los videos y mostramos productos
-                 showCategory(categoria); 
-             }
-             return;
+              this.showView('home');
+              const categoria = params.get('categoria');
+              if (typeof showCategory === 'function') {
+                  // Aquí ocultamos los videos y mostramos productos
+                  showCategory(categoria); 
+              }
+              return;
         }
 
         // Rutas simples

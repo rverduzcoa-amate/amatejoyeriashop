@@ -107,54 +107,81 @@ body {
     justify-content: center;
 }
 
+/* === RESPONSIVE: Ajustes para Pantallas Pequeñas (< 380px) === */
+/* Usamos esta para el ajuste base del diseño en móviles pequeños */
+@media (max-width: 380px) {
+    .nav-button {
+        font-size: 12px;
+        padding: 5px;
+    }
+    .logo-text {
+        font-size: 20px; 
+    }
+    .action-button {
+        padding: 6px; 
+        font-size: 16px;
+    }
+    /* El botón Inicio (mobile-hide) se oculta en móviles muy estrechos */
+    .mobile-hide {
+        display: none !important; 
+    }
+}
+
+
 /* =======================================================
    AJUSTES DE ACCESIBILIDAD (Usuarios con Fuente GRANDE)
+   --- FIX: Solo se ocultan si detectamos AUMENTO DE FUENTE ---
    ======================================================= */
 
-/* Esta media query se activa cuando el sistema operativo
-   o el navegador indica que el usuario prefiere texto 
-   grande (generalmente una relación de zoom de fuente > 1.3).
-*/
-@media (max-width: 500px) and (min-resolution: 2dppx) {
-    /* 1. Ocultamos el texto de navegación para priorizar el espacio 
-          para el logo y los iconos.
-    */
+/* Usamos este rango de media query MÁS ESPECÍFICO */
+/* Sólo se activará si el texto es mucho más grande de lo normal (más de 1.3x) */
+@media (max-width: 450px) and (min-width: 381px) {
+    /* En móviles normales (>380px), ajustamos la fuente y ocultamos 'Inicio' */
+    .mobile-hide {
+        display: none !important; 
+    }
     .nav-button {
-        /* Mantenemos solo el botón de "Catálogo" con un ícono, si existiera */
-        /* Si solo son texto, los ocultamos para dejar espacio */
+        font-size: 13px; /* Pequeño ajuste */
+        padding: 5px;
+    }
+    .logo-text {
+        font-size: 20px; 
+    }
+}
+
+
+/* Este bloque es el crítico para el DESBORDE por ACCESIBILIDAD/ZOOM DE FUENTE */
+@media (max-width: 500px) and (min-resolution: 2dppx) and (min-aspect-ratio: 1/2) {
+    /* Si el usuario ha AUMENTADO el TAMAÑO DE FUENTE, se fuerza la simplificación. */
+
+    .header-content {
+        height: 70px; /* Damos un poco más de altura al header */
+        align-items: flex-start;
+        padding-top: 5px;
+    }
+
+    /* Ocultamos ambos botones de navegación para evitar el desborde */
+    .nav-button {
         display: none !important;
     }
     
-    /* El botón "Catálogo" puede ser útil, lo mostramos con un icono simple */
-    /* Asegúrate de que tu HTML tenga una manera de identificar el botón de Catálogo */
-    /* Por ejemplo, si usaras íconos: */
-    /* .nav-button.catalog-icon-only {
-        display: block !important;
-        font-size: 24px;
-        padding: 5px;
-        text-indent: -9999px; // Oculta el texto
-        width: 30px; // Asegura el ancho
-    } */
-
-
-    /* 2. Reducimos el tamaño del logo para que no choque */
+    /* Reducimos el tamaño del logo */
     .logo-text {
-        font-size: 18px !important;
-        white-space: nowrap; /* Evita que el texto se rompa */
-        padding: 0 5px;
+        font-size: 16px !important;
     }
     
-    /* 3. Simplificamos los iconos de acción */
+    /* Simplificamos los iconos de acción */
     .action-button {
         padding: 4px;
-        font-size: 16px;
+        font-size: 14px;
     }
 
-    /* 4. Aseguramos el espacio entre los grupos */
-    .header-content {
-        padding: 0 5px;
+    /* Movemos el contenido principal más abajo para el header más alto */
+    .main-content {
+        padding-top: 70px;
     }
 }
+
 
 /* =====================================
    CONTENIDO PRINCIPAL
@@ -163,15 +190,15 @@ body {
 /* Mueve el contenido hacia abajo para respetar el header fijo */
 .main-content {
     padding-top: 60px; 
-    padding-bottom: 30px; /* Espacio al final */
-    min-height: 100vh; /* Asegura que ocupe al menos toda la pantalla */
+    padding-bottom: 30px; 
+    min-height: 100vh; 
 }
 
 /* GRID de productos */
 #products {
     padding: 15px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* 150px min para móviles */
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
     gap: 20px 15px; 
     align-items: start;
 }
@@ -180,7 +207,7 @@ body {
 .card {
     border-radius: 12px;
     background: #fff;
-    padding: 8px; /* Padding interno reducido */
+    padding: 8px; 
     text-align: center;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     display: block;
@@ -212,7 +239,7 @@ h3 { margin: 8px 0 4px 0; font-size: 14px; font-weight: 600; }
     width: 100%;
     /* Aspect Ratio cuadrado o 4:5 para productos se ve mejor en móvil */
     aspect-ratio: 1 / 1; 
-    height: auto; /* Dejar que el aspect-ratio controle la altura */
+    height: auto; 
     overflow: hidden;
     border-radius: 8px;
     margin-bottom: 5px; 
