@@ -42,6 +42,38 @@ function setAutoplayAllowed() {
     try { localStorage.setItem(AUTOPLAY_FLAG_KEY, '1'); } catch (e) { /* noop */ }
 }
 
+// Lazy image placeholder and observer (loads images only when near viewport)
+const LAZY_PLACEHOLDER = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+let lazyImageObserver = null;
+function observeLazyImages() {
+    const nodes = document.querySelectorAll('img[data-src]');
+    if (!nodes || nodes.length === 0) return;
+
+    if (!('IntersectionObserver' in window)) {
+        nodes.forEach(img => { img.src = img.dataset.src; img.removeAttribute('data-src'); });
+        return;
+    }
+
+    if (!lazyImageObserver) {
+        lazyImageObserver = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    if (img.dataset && img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                    }
+                    obs.unobserve(img);
+                }
+            });
+        }, { rootMargin: '300px 0px', threshold: 0.01 });
+    }
+
+    nodes.forEach(img => {
+        if (img.dataset && img.dataset.src) lazyImageObserver.observe(img);
+    });
+}
+
 function showGlobalPlayOverlay() {
     if (globalPlayOverlayShown) return;
     // Do not show overlay if user previously allowed autoplay
@@ -401,8 +433,7 @@ const router = {
                 // Limpiar productos (porque estamos en el home principal)
                 const productsCont = document.getElementById("products");
                 if (productsCont) productsCont.innerHTML = ""; 
-                // Render home product feed incrementally
-                if (typeof renderHomeProducts === 'function') renderHomeProducts();
+                // Home does not render products here (keep home light)
             }
 
             if (viewName === 'categories') {
@@ -586,11 +617,18 @@ function showCategory(category) {
             if (hasMultiple) {
                 allImgs.forEach((img, idx) => {
                     const imgEl = document.createElement('img');
-                    imgEl.src = img;
                     imgEl.alt = prod.nombre || 'Producto';
                     imgEl.className = idx === 0 ? 'active' : '';
                     imgEl.loading = 'lazy';
                     imgEl.decoding = 'async';
+                    if (idx === 0) {
+                        // visible image: load immediately
+                        imgEl.src = img;
+                    } else {
+                        // defer loading until near viewport
+                        imgEl.dataset.src = img;
+                        imgEl.src = LAZY_PLACEHOLDER;
+                    }
                     imgsInner.appendChild(imgEl);
                 });
 
@@ -608,11 +646,12 @@ function showCategory(category) {
             } else {
                 const imgSrc = allImgs[0] || 'media/img/placeholder.jpg';
                 const imgEl = document.createElement('img');
-                imgEl.src = imgSrc;
                 imgEl.alt = prod.nombre || 'Producto';
                 imgEl.className = 'active';
                 imgEl.loading = 'lazy';
                 imgEl.decoding = 'async';
+                // visible thumbnail: load immediately
+                imgEl.src = imgSrc;
                 imgsInner.appendChild(imgEl);
                 imgsContainer.appendChild(imgsInner);
             }
@@ -627,6 +666,8 @@ function showCategory(category) {
         }
 
         cont.appendChild(frag);
+        // Start observing deferred images in this chunk
+        try { observeLazyImages(); } catch (e) {}
 
         if (index < productsByCategory.length) {
             // yield back to the browser
