@@ -15,7 +15,7 @@ function toggleHomeView(showVideos = true) {
         if(categoryCarousel) categoryCarousel.style.display = 'none';
         if(titleWrapper) titleWrapper.style.display = 'none';
     }
-}
+// ...existing code...
 
 /* ==========================
     CARRUSEL DE VIDEOS (Reels Global con SWIPE)
@@ -57,89 +57,8 @@ function normalizeSrcset(srcset) {
     return srcset.split(',').map(s => {
         const parts = s.trim().split(/\s+/);
         if (parts.length === 0) return s;
-
-    // --- Virtualization implementation ---
-    // Only render visible cards in the viewport (+ buffer), remove offscreen cards
-    // For very large categories, show skeletons while first chunk loads
-    const VIRTUALIZE_THRESHOLD = 30;
-    const SKELETON_COUNT = 8;
-    const bufferRows = 4;
-    const cardHeight = 260; // px, estimate
-    const total = productsByCategory.length;
-    let scrollHandler = null;
-    let resizeHandler = null;
-    let cleanupVirtual = null;
-
-    // Clean up previous listeners if any
-    if (cont.__virtualCleanup) { try { cont.__virtualCleanup(); } catch (e) {} }
-
-    // Virtualize if large
-    if (total > VIRTUALIZE_THRESHOLD) {
-        cont.innerHTML = '<div class="virtual-list" style="position:relative"><div class="vs-top"></div><div class="vs-items"></div><div class="vs-bottom"></div></div>';
-        const vs = cont.querySelector('.virtual-list');
-        const vsTop = vs.querySelector('.vs-top');
-        const vsItems = vs.querySelector('.vs-items');
-        const vsBottom = vs.querySelector('.vs-bottom');
-        const totalHeight = cardHeight * total;
-        vsBottom.style.height = totalHeight + 'px';
-
-        // Skeletons for first paint
-        vsItems.innerHTML = '';
-        for (let i = 0; i < SKELETON_COUNT; i++) {
-            const skel = document.createElement('div');
-            skel.className = 'card card-skeleton';
-            skel.style.height = cardHeight + 'px';
-            vsItems.appendChild(skel);
-        }
-
-        // After a tick, render visible range
-        setTimeout(() => {
-            function renderRange() {
-                const scrollTop = window.scrollY || window.pageYOffset || 0;
-                const contTop = cont.getBoundingClientRect().top + scrollTop;
-                const viewportHeight = window.innerHeight || 800;
-                const startIdx = Math.max(0, Math.floor((scrollTop - contTop) / cardHeight) - bufferRows);
-                const endIdx = Math.min(total, Math.ceil((scrollTop - contTop + viewportHeight) / cardHeight) + bufferRows);
-                vsTop.style.height = (startIdx * cardHeight) + 'px';
-                vsBottom.style.height = ((total - endIdx) * cardHeight) + 'px';
-                vsItems.innerHTML = '';
-                for (let i = startIdx; i < endIdx; i++) {
-                    const prod = productsByCategory[i];
-                    const card = document.createElement('div');
-                    card.className = 'card card-link';
-                    card.style.cursor = 'pointer';
-                    card.dataset.productId = prod.id;
-                    const allImgs = Array.isArray(prod.img) ? prod.img : (prod.img ? [prod.img] : []);
-                    const imgSrc = allImgs[0] || 'media/img/placeholder.jpg';
-                    const pic = buildResponsivePicture(imgSrc, { loadImmediately: false, alt: prod.nombre || 'Producto', index: 0 });
-                    pic.querySelector('img').setAttribute('loading', 'lazy');
-                    card.appendChild(pic);
-                    const title = document.createElement('h3'); title.textContent = prod.nombre || 'Producto';
-                    const price = document.createElement('p'); price.className = 'precio'; price.textContent = prod.precio || '';
-                    card.appendChild(title); card.appendChild(price);
-                    vsItems.appendChild(card);
-                }
-                try { observeLazyImages(); } catch (e) {}
-                attachProductClickHandler();
-            }
-            renderRange();
-            scrollHandler = () => { renderRange(); };
-            resizeHandler = () => { renderRange(); };
-            window.addEventListener('scroll', scrollHandler, { passive: true });
-            window.addEventListener('resize', resizeHandler);
-        }, 0);
-
-        cleanupVirtual = () => {
-            window.removeEventListener('scroll', scrollHandler);
-            window.removeEventListener('resize', resizeHandler);
-            cont.__virtualCleanup = null;
-        };
-        cont.__virtualCleanup = cleanupVirtual;
-        return;
-    }
-    // Fallback: small categories, render all at once (existing logic)
-    // ...existing code...
-    globalPlayOverlay = null;
+        return s;
+    }).join(', ');
 }
 
 function userGesturePlayAll() {
@@ -188,11 +107,11 @@ function initVideoCarousel() {
         return;
     }
 
-    // Use metadata preload to reduce network weight on first paint
+    // Defer video loading/decoding until user interacts
     container.innerHTML = videosHome.map((video, index) => `
         <div id="reel-${index}" class="video-slide-item ${index === 0 ? 'active' : ''}">
-            <video preload="metadata" autoplay playsinline muted ${video.poster ? `poster="${video.poster}"` : ''}>
-                <source src="${video.src}" type="video/mp4">
+            <video preload="none" playsinline muted data-src="${video.src}" ${video.poster ? `poster="${video.poster}"` : ''}>
+                <source data-src="${video.src}" type="video/mp4">
             </video>
         </div>
     `).join('');
@@ -201,23 +120,38 @@ function initVideoCarousel() {
     videosHome.forEach((_, index) => {
         const slide = document.getElementById(`reel-${index}`);
         const video = slide.querySelector('video');
-        
+        // Only load video src on first user gesture
+        video.loadDeferred = function() {
+            if (!video.src) {
+                const src = video.getAttribute('data-src');
+                if (src) video.src = src;
+                const source = video.querySelector('source');
+                if (source && source.getAttribute('data-src')) source.src = source.getAttribute('data-src');
+                video.load();
+            }
+        };
         video.addEventListener('ended', goToNextVideo);
-        // Fix para móviles: forzar tiempo 0 al 
         video.addEventListener('loadedmetadata', () => { video.currentTime = 0; });
-        
         videoElements.push({ slide, video });
     });
-    
-    // Eventos de Swipe (Passive true mejora rendimiento de scroll)
+
     videoCarouselContainerElement = document.getElementById('videoCarouselContainer');
     if (videoCarouselContainerElement) {
         videoCarouselContainerElement.addEventListener('touchstart', handleTouchStart, { passive: true });
         videoCarouselContainerElement.addEventListener('touchmove', handleTouchMove, { passive: true });
         videoCarouselContainerElement.addEventListener('touchend', handleTouchEnd);
     }
+    // Only load and play videos after user gesture
+    document.body.addEventListener('click', loadAllVideosOnce, { once: true });
+    document.body.addEventListener('touchstart', loadAllVideosOnce, { once: true });
+}
 
-
+function loadAllVideosOnce() {
+    if (Array.isArray(videoElements)) {
+        videoElements.forEach(item => {
+            if (item.video && typeof item.video.loadDeferred === 'function') item.video.loadDeferred();
+        });
+    }
     playCurrentVideo();
 }
 
@@ -710,8 +644,6 @@ function showCategory(category) {
             try { observeLazyImages(); } catch (e) {}
             attachProductClickHandler();
         }
-
-        function onScroll() {
             if (rafId) cancelAnimationFrame(rafId);
             rafId = requestAnimationFrame(() => {
                 const scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
@@ -733,87 +665,62 @@ function showCategory(category) {
             window.removeEventListener('resize', onScroll);
             if (rafId) cancelAnimationFrame(rafId);
             cont.__virtualCleanup = null;
-        };
+    };
+    return; // virtualization active
+}
 
-        return; // virtualization active
-    }
+    // Fallback: small categories, render all at once (existing logic)
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < productsByCategory.length; i++) {
+        const prod = productsByCategory[i];
+        const card = document.createElement('div');
+        card.className = 'card card-link';
+        card.style.cursor = 'pointer';
+        card.dataset.productId = prod.id;
 
-    // Render products in small chunks to avoid blocking the main thread for large lists
-    let chunkSize = 20;
-    let index = 0;
+        const allImgs = Array.isArray(prod.img) ? prod.img : (prod.img ? [prod.img] : []);
+        const hasMultiple = allImgs.length > 1;
 
-    function renderChunk() {
-        const frag = document.createDocumentFragment();
-        for (let i = 0; i < chunkSize && index < productsByCategory.length; i++, index++) {
-            const prod = productsByCategory[index];
-            const card = document.createElement('div');
-            card.className = 'card card-link';
-            card.style.cursor = 'pointer';
-            card.dataset.productId = prod.id;
+        let imgsContainer = document.createElement('div');
+        imgsContainer.className = 'carousel';
+        const imgsInner = document.createElement('div');
+        imgsInner.className = 'carousel-images';
 
-            const allImgs = Array.isArray(prod.img) ? prod.img : (prod.img ? [prod.img] : []);
-            const hasMultiple = allImgs.length > 1;
-
-            let imgsContainer = document.createElement('div');
-            imgsContainer.className = 'carousel';
-            const imgsInner = document.createElement('div');
-            imgsInner.className = 'carousel-images';
-
-            if (hasMultiple) {
-                allImgs.forEach((img, idx) => {
-                    const pic = buildResponsivePicture(img, { loadImmediately: idx === 0, alt: prod.nombre || 'Producto', index: idx });
-                    // For carousel layout we need the picture inside the images container
-                    imgsInner.appendChild(pic);
-                });
-
-                imgsContainer.appendChild(imgsInner);
-                const prev = document.createElement('button'); prev.className = 'prev'; prev.textContent = '‹'; prev.setAttribute('data-id', `carousel-${category}-${index}`);
-                const next = document.createElement('button'); next.className = 'next'; next.textContent = '›'; next.setAttribute('data-id', `carousel-${category}-${index}`);
-                imgsContainer.appendChild(prev);
-                imgsContainer.appendChild(next);
-                const dots = document.createElement('div'); dots.className = 'dots';
-                allImgs.forEach((_, d) => {
-                    const span = document.createElement('span'); span.className = d === 0 ? 'dot active-dot' : 'dot'; span.setAttribute('data-index', d); span.setAttribute('data-id', `carousel-${category}-${index}`);
-                    dots.appendChild(span);
-                });
-                imgsContainer.appendChild(dots);
-            } else {
-                const imgSrc = allImgs[0] || 'media/img/placeholder.jpg';
-                const pic = buildResponsivePicture(imgSrc, { loadImmediately: true, alt: prod.nombre || 'Producto', index: 0 });
+        if (hasMultiple) {
+            allImgs.forEach((img, idx) => {
+                const pic = buildResponsivePicture(img, { loadImmediately: idx === 0, alt: prod.nombre || 'Producto', index: idx });
                 imgsInner.appendChild(pic);
-                imgsContainer.appendChild(imgsInner);
-            }
-
-            const title = document.createElement('h3'); title.textContent = prod.nombre || 'Producto';
-            const price = document.createElement('p'); price.className = 'precio'; price.textContent = prod.precio || '';
-
-            card.appendChild(imgsContainer);
-            card.appendChild(title);
-            card.appendChild(price);
-            frag.appendChild(card);
-        }
-
-        cont.appendChild(frag);
-        // Start observing deferred images in this chunk
-        try { observeLazyImages(); } catch (e) {}
-
-        if (index < productsByCategory.length) {
-            // yield back to the browser
-            requestAnimationFrame(renderChunk);
+            });
+            imgsContainer.appendChild(imgsInner);
+            const prev = document.createElement('button'); prev.className = 'prev'; prev.textContent = '‹'; prev.setAttribute('data-id', `carousel-${category}-${i}`);
+            const next = document.createElement('button'); next.className = 'next'; next.textContent = '›'; next.setAttribute('data-id', `carousel-${category}-${i}`);
+            imgsContainer.appendChild(prev);
+            imgsContainer.appendChild(next);
+            const dots = document.createElement('div'); dots.className = 'dots';
+            allImgs.forEach((_, d) => {
+                const span = document.createElement('span'); span.className = d === 0 ? 'dot active-dot' : 'dot'; span.setAttribute('data-index', d); span.setAttribute('data-id', `carousel-${category}-${i}`);
+                dots.appendChild(span);
+            });
+            imgsContainer.appendChild(dots);
         } else {
-            // Finished rendering
-            setTimeout(() => { animateProducts(); initAllCarousels(); }, 0);
+            const imgSrc = allImgs[0] || 'media/img/placeholder.jpg';
+            const pic = buildResponsivePicture(imgSrc, { loadImmediately: true, alt: prod.nombre || 'Producto', index: 0 });
+            imgsInner.appendChild(pic);
+            imgsContainer.appendChild(imgsInner);
         }
-    }
 
-    // adapt chunkSize to viewport for faster first paint on mobile
-    const preferred = 20;
-    const adaptive = getChunkSize(preferred);
-    // start rendering with smaller chunks on narrow viewports
-    const originalChunk = chunkSize;
-    chunkSize = adaptive;
-    renderChunk();
-    // ensure click delegation is attached
+        const title = document.createElement('h3'); title.textContent = prod.nombre || 'Producto';
+        const price = document.createElement('p'); price.className = 'precio'; price.textContent = prod.precio || '';
+
+        card.appendChild(imgsContainer);
+        card.appendChild(title);
+        card.appendChild(price);
+        frag.appendChild(card);
+    }
+    cont.appendChild(frag);
+    try { observeLazyImages(); } catch (e) {}
+    setTimeout(() => { animateProducts(); initAllCarousels(); }, 0);
+
     attachProductClickHandler();
 }
 
@@ -904,78 +811,80 @@ function renderHomeProducts() {
         for (const cat in products) {
             if (Array.isArray(products[cat])) feed = feed.concat(products[cat]);
         }
-    }
-
     if (!feed || feed.length === 0) return;
 
-    // Render the first N items synchronously for immediate paint, then chunk the rest
-    const firstVisible = Math.min(4, feed.length); // smaller synchronous set for faster first paint
-    let index = 0;
+    // --- Virtualization for home feed ---
+    const VIRTUALIZE_THRESHOLD = 30;
+    const SKELETON_COUNT = 8;
+    const bufferRows = 4;
+    const cardHeight = 260;
+    const total = feed.length;
+    let scrollHandler = null;
+    let resizeHandler = null;
+    let cleanupVirtual = null;
+    if (cont.__virtualCleanup) { try { cont.__virtualCleanup(); } catch (e) {} }
 
-    function createCard(prod) {
-        const card = document.createElement('div');
-        card.className = 'card card-link';
-        card.style.cursor = 'pointer';
-        card.dataset.productId = prod.id;
-        const allImgs = Array.isArray(prod.img) ? prod.img : (prod.img ? [prod.img] : []);
-        const imgsContainer = document.createElement('div');
-        imgsContainer.className = 'carousel';
-        const imgsInner = document.createElement('div');
-        imgsInner.className = 'carousel-images';
-
-        if (allImgs.length > 1) {
-            allImgs.forEach((img, idx) => {
-                const pic = buildResponsivePicture(img, { loadImmediately: idx === 0, alt: prod.nombre || 'Producto', index: idx });
-                imgsInner.appendChild(pic);
-            });
-            imgsContainer.appendChild(imgsInner);
-            const prev = document.createElement('button'); prev.className = 'prev'; prev.textContent = '‹';
-            const next = document.createElement('button'); next.className = 'next'; next.textContent = '›';
-            imgsContainer.appendChild(prev); imgsContainer.appendChild(next);
-            const dots = document.createElement('div'); dots.className = 'dots';
-            allImgs.forEach((_, d) => { const span = document.createElement('span'); span.className = d === 0 ? 'dot active-dot' : 'dot'; dots.appendChild(span); });
-            imgsContainer.appendChild(dots);
-        } else {
-            const pic = buildResponsivePicture(allImgs[0] || 'media/img/placeholder.jpg', { loadImmediately: true, alt: prod.nombre || 'Producto', index: 0 });
-            imgsInner.appendChild(pic);
-            imgsContainer.appendChild(imgsInner);
+    if (total > VIRTUALIZE_THRESHOLD) {
+        cont.innerHTML = '<div class="virtual-list" style="position:relative"><div class="vs-top"></div><div class="vs-items"></div><div class="vs-bottom"></div></div>';
+        const vs = cont.querySelector('.virtual-list');
+        const vsTop = vs.querySelector('.vs-top');
+        const vsItems = vs.querySelector('.vs-items');
+        const vsBottom = vs.querySelector('.vs-bottom');
+        const totalHeight = cardHeight * total;
+        vsBottom.style.height = totalHeight + 'px';
+        // Skeletons for first paint
+        vsItems.innerHTML = '';
+        for (let i = 0; i < SKELETON_COUNT; i++) {
+            const skel = document.createElement('div');
+            skel.className = 'card card-skeleton';
+            skel.style.height = cardHeight + 'px';
+            vsItems.appendChild(skel);
         }
-
-        const title = document.createElement('h3'); title.textContent = prod.nombre || 'Producto';
-        const price = document.createElement('p'); price.className = 'precio'; price.textContent = prod.precio || '';
-
-        card.appendChild(imgsContainer);
-        card.appendChild(title);
-        card.appendChild(price);
-        return card;
+        setTimeout(() => {
+            function renderRange() {
+                const scrollTop = window.scrollY || window.pageYOffset || 0;
+                const contTop = cont.getBoundingClientRect().top + scrollTop;
+                const viewportHeight = window.innerHeight || 800;
+                const startIdx = Math.max(0, Math.floor((scrollTop - contTop) / cardHeight) - bufferRows);
+                const endIdx = Math.min(total, Math.ceil((scrollTop - contTop + viewportHeight) / cardHeight) + bufferRows);
+                vsTop.style.height = (startIdx * cardHeight) + 'px';
+                vsBottom.style.height = ((total - endIdx) * cardHeight) + 'px';
+                vsItems.innerHTML = '';
+                for (let i = startIdx; i < endIdx; i++) {
+                    const prod = feed[i];
+                    const card = document.createElement('div');
+                    card.className = 'card card-link';
+                    card.style.cursor = 'pointer';
+                    card.dataset.productId = prod.id;
+                    const allImgs = Array.isArray(prod.img) ? prod.img : (prod.img ? [prod.img] : []);
+                    const imgSrc = allImgs[0] || 'media/img/placeholder.jpg';
+                    const pic = buildResponsivePicture(imgSrc, { loadImmediately: false, alt: prod.nombre || 'Producto', index: 0 });
+                    pic.querySelector('img').setAttribute('loading', 'lazy');
+                    card.appendChild(pic);
+                    const title = document.createElement('h3'); title.textContent = prod.nombre || 'Producto';
+                    const price = document.createElement('p'); price.className = 'precio'; price.textContent = prod.precio || '';
+                    card.appendChild(title); card.appendChild(price);
+                    vsItems.appendChild(card);
+                }
+                try { observeLazyImages(); } catch (e) {}
+                attachProductClickHandler();
+            }
+            renderRange();
+            scrollHandler = () => { renderRange(); };
+            resizeHandler = () => { renderRange(); };
+            window.addEventListener('scroll', scrollHandler, { passive: true });
+            window.addEventListener('resize', resizeHandler);
+        }, 0);
+        cleanupVirtual = () => {
+            window.removeEventListener('scroll', scrollHandler);
+            window.removeEventListener('resize', resizeHandler);
+            cont.__virtualCleanup = null;
+        };
+        cont.__virtualCleanup = cleanupVirtual;
+        return;
     }
+    // Fallback: small feeds, render all at once (existing logic)
 
-    // Render firstVisible items synchronously
-    const frag = document.createDocumentFragment();
-    for (; index < firstVisible; index++) {
-        frag.appendChild(createCard(feed[index]));
-    }
-    cont.appendChild(frag);
-
-    // Continue rendering remaining items in chunks
-    const chunkSize = 20;
-
-    function renderChunk() {
-        const f = document.createDocumentFragment();
-        for (let i = 0; i < chunkSize && index < feed.length; i++, index++) {
-            f.appendChild(createCard(feed[index]));
-        }
-        cont.appendChild(f);
-
-        if (index < feed.length) {
-            requestAnimationFrame(renderChunk);
-        } else {
-            setTimeout(() => { animateProducts(); initAllCarousels(); }, 0);
-        }
-    }
-
-    if (index < feed.length) requestAnimationFrame(renderChunk);
-    else setTimeout(() => { animateProducts(); initAllCarousels(); }, 0);
 }
 
 // Build a responsive <picture> element using the image manifest when available.
@@ -1050,4 +959,5 @@ function attachProductClickHandler() {
         if (id) router.goTo(`product?id=${encodeURIComponent(id)}`);
     });
     container.__productClickAttached = true;
+}
 }
