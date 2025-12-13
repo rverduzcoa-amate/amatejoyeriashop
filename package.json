@@ -6,7 +6,9 @@
     "generate-images": "node tools/generate_responsive_images.js --src media/img --out media/optimized --manifest media/image-manifest.json"
   },
   "dependencies": {
+    "jsdom": "^27.3.0",
     "minimist": "^1.2.8",
+    "puppeteer": "^24.33.0",
     "sharp": "^0.32.0"
   }
 }

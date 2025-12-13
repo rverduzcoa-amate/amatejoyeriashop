@@ -45,6 +45,22 @@ function setAutoplayAllowed() {
 // Lazy image placeholder and observer (loads images only when near viewport)
 const LAZY_PLACEHOLDER = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 let lazyImageObserver = null;
+// Normalize manifest paths coming from the generator. Many entries use "../media/..."
+// Convert leading "../" to absolute paths from site root "/media/..." and clean srcset lists.
+function normalizeManifestPath(p) {
+    if (!p || typeof p !== 'string') return p;
+    return p.replace(/^(?:\.\.\/)+/, '/');
+}
+
+function normalizeSrcset(srcset) {
+    if (!srcset || typeof srcset !== 'string') return srcset;
+    return srcset.split(',').map(s => {
+        const parts = s.trim().split(/\s+/);
+        if (parts.length === 0) return s;
+        parts[0] = normalizeManifestPath(parts[0]);
+        return parts.join(' ');
+    }).join(', ');
+}
 function observeLazyImages() {
     const nodes = document.querySelectorAll('img[data-src]');
     if (!nodes || nodes.length === 0) return;
@@ -64,13 +80,15 @@ function observeLazyImages() {
                         const manifestKey = img.dataset.manifest;
                         if (manifestKey && window.imageManifest && window.imageManifest[manifestKey]) {
                             const m = window.imageManifest[manifestKey];
-                            if (m.srcset_avif) img.srcset = m.srcset_avif; // modern first
-                            else if (m.srcset_webp) img.srcset = m.srcset_webp;
+                            if (m.srcset_avif) img.srcset = normalizeSrcset(m.srcset_avif); // modern first
+                            else if (m.srcset_webp) img.srcset = normalizeSrcset(m.srcset_webp);
                             if (m.sizes) img.sizes = m.sizes;
                             if (m.placeholder && (!img.src || img.src === LAZY_PLACEHOLDER)) {
                                 // replace placeholder with small placeholder while srcset loads
-                                img.src = m.placeholder;
+                                img.src = normalizeManifestPath(m.placeholder);
                             }
+                            // ensure deferred src uses normalized default when available
+                            if (m.default) img.dataset.src = normalizeManifestPath(m.default);
                         }
                     } catch (e) {}
                     if (img.dataset && img.dataset.src) {
@@ -846,10 +864,10 @@ function buildResponsivePicture(src, { loadImmediately = false, alt = '', index 
     const manifestEntry = (window.imageManifest && window.imageManifest[src]) ? window.imageManifest[src] : null;
 
     if (manifestEntry && manifestEntry.srcset_avif) {
-        const s = document.createElement('source'); s.type = 'image/avif'; s.srcset = manifestEntry.srcset_avif; if (manifestEntry.sizes) s.sizes = manifestEntry.sizes; pic.appendChild(s);
+        const s = document.createElement('source'); s.type = 'image/avif'; s.srcset = normalizeSrcset(manifestEntry.srcset_avif); if (manifestEntry.sizes) s.sizes = manifestEntry.sizes; pic.appendChild(s);
     }
     if (manifestEntry && manifestEntry.srcset_webp) {
-        const s2 = document.createElement('source'); s2.type = 'image/webp'; s2.srcset = manifestEntry.srcset_webp; if (manifestEntry.sizes) s2.sizes = manifestEntry.sizes; pic.appendChild(s2);
+        const s2 = document.createElement('source'); s2.type = 'image/webp'; s2.srcset = normalizeSrcset(manifestEntry.srcset_webp); if (manifestEntry.sizes) s2.sizes = manifestEntry.sizes; pic.appendChild(s2);
     }
 
     const img = document.createElement('img');
@@ -865,16 +883,16 @@ function buildResponsivePicture(src, { loadImmediately = false, alt = '', index 
 
     if (loadImmediately) {
         if (manifestEntry && manifestEntry.default) {
-            img.src = manifestEntry.default;
-            if (manifestEntry.srcset_avif) img.srcset = manifestEntry.srcset_avif;
-            else if (manifestEntry.srcset_webp) img.srcset = manifestEntry.srcset_webp;
+            img.src = normalizeManifestPath(manifestEntry.default);
+            if (manifestEntry.srcset_avif) img.srcset = normalizeSrcset(manifestEntry.srcset_avif);
+            else if (manifestEntry.srcset_webp) img.srcset = normalizeSrcset(manifestEntry.srcset_webp);
             if (manifestEntry.sizes) img.sizes = manifestEntry.sizes;
         } else {
             img.src = src;
         }
     } else {
         // defer loading
-        img.dataset.src = (manifestEntry && manifestEntry.default) ? manifestEntry.default : src;
+        img.dataset.src = (manifestEntry && manifestEntry.default) ? normalizeManifestPath(manifestEntry.default) : src;
         img.src = LAZY_PLACEHOLDER;
         img.dataset.manifest = src;
     }
