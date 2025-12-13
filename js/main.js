@@ -642,20 +642,9 @@ function showCategory(category) {
 
             if (hasMultiple) {
                 allImgs.forEach((img, idx) => {
-                    const imgEl = document.createElement('img');
-                    imgEl.alt = prod.nombre || 'Producto';
-                    imgEl.className = idx === 0 ? 'active' : '';
-                    imgEl.loading = 'lazy';
-                    imgEl.decoding = 'async';
-                    if (idx === 0) {
-                        // visible image: load immediately
-                        imgEl.src = img;
-                    } else {
-                        // defer loading until near viewport
-                        imgEl.dataset.src = img;
-                        imgEl.src = LAZY_PLACEHOLDER;
-                    }
-                    imgsInner.appendChild(imgEl);
+                    const pic = buildResponsivePicture(img, { loadImmediately: idx === 0, alt: prod.nombre || 'Producto', index: idx });
+                    // For carousel layout we need the picture inside the images container
+                    imgsInner.appendChild(pic);
                 });
 
                 imgsContainer.appendChild(imgsInner);
@@ -671,14 +660,8 @@ function showCategory(category) {
                 imgsContainer.appendChild(dots);
             } else {
                 const imgSrc = allImgs[0] || 'media/img/placeholder.jpg';
-                const imgEl = document.createElement('img');
-                imgEl.alt = prod.nombre || 'Producto';
-                imgEl.className = 'active';
-                imgEl.loading = 'lazy';
-                imgEl.decoding = 'async';
-                // visible thumbnail: load immediately
-                imgEl.src = imgSrc;
-                imgsInner.appendChild(imgEl);
+                const pic = buildResponsivePicture(imgSrc, { loadImmediately: true, alt: prod.nombre || 'Producto', index: 0 });
+                imgsInner.appendChild(pic);
                 imgsContainer.appendChild(imgsInner);
             }
 
@@ -796,7 +779,6 @@ function renderHomeProducts() {
         card.className = 'card card-link';
         card.style.cursor = 'pointer';
         card.setAttribute('onclick', `router.goTo('product?id=${prod.id}')`);
-
         const allImgs = Array.isArray(prod.img) ? prod.img : (prod.img ? [prod.img] : []);
         const imgsContainer = document.createElement('div');
         imgsContainer.className = 'carousel';
@@ -805,13 +787,8 @@ function renderHomeProducts() {
 
         if (allImgs.length > 1) {
             allImgs.forEach((img, idx) => {
-                const imgEl = document.createElement('img');
-                imgEl.src = img;
-                imgEl.alt = prod.nombre || 'Producto';
-                imgEl.className = idx === 0 ? 'active' : '';
-                imgEl.loading = 'lazy';
-                imgEl.decoding = 'async';
-                imgsInner.appendChild(imgEl);
+                const pic = buildResponsivePicture(img, { loadImmediately: idx === 0, alt: prod.nombre || 'Producto', index: idx });
+                imgsInner.appendChild(pic);
             });
             imgsContainer.appendChild(imgsInner);
             const prev = document.createElement('button'); prev.className = 'prev'; prev.textContent = '‹';
@@ -821,13 +798,8 @@ function renderHomeProducts() {
             allImgs.forEach((_, d) => { const span = document.createElement('span'); span.className = d === 0 ? 'dot active-dot' : 'dot'; dots.appendChild(span); });
             imgsContainer.appendChild(dots);
         } else {
-            const imgEl = document.createElement('img');
-            imgEl.src = allImgs[0] || 'media/img/placeholder.jpg';
-            imgEl.alt = prod.nombre || 'Producto';
-            imgEl.className = 'active';
-            imgEl.loading = 'lazy';
-            imgEl.decoding = 'async';
-            imgsInner.appendChild(imgEl);
+            const pic = buildResponsivePicture(allImgs[0] || 'media/img/placeholder.jpg', { loadImmediately: true, alt: prod.nombre || 'Producto', index: 0 });
+            imgsInner.appendChild(pic);
             imgsContainer.appendChild(imgsInner);
         }
 
@@ -866,4 +838,48 @@ function renderHomeProducts() {
 
     if (index < feed.length) requestAnimationFrame(renderChunk);
     else setTimeout(() => { animateProducts(); initAllCarousels(); }, 0);
+}
+
+// Build a responsive <picture> element using the image manifest when available.
+function buildResponsivePicture(src, { loadImmediately = false, alt = '', index = 0 } = {}) {
+    const pic = document.createElement('picture');
+    const manifestEntry = (window.imageManifest && window.imageManifest[src]) ? window.imageManifest[src] : null;
+
+    if (manifestEntry && manifestEntry.srcset_avif) {
+        const s = document.createElement('source'); s.type = 'image/avif'; s.srcset = manifestEntry.srcset_avif; if (manifestEntry.sizes) s.sizes = manifestEntry.sizes; pic.appendChild(s);
+    }
+    if (manifestEntry && manifestEntry.srcset_webp) {
+        const s2 = document.createElement('source'); s2.type = 'image/webp'; s2.srcset = manifestEntry.srcset_webp; if (manifestEntry.sizes) s2.sizes = manifestEntry.sizes; pic.appendChild(s2);
+    }
+
+    const img = document.createElement('img');
+    img.alt = alt || '';
+    img.className = index === 0 ? 'active loading' : 'loading';
+    img.loading = 'lazy'; img.decoding = 'async';
+
+    if (manifestEntry && manifestEntry.width && manifestEntry.height) {
+        // set moderate display width to help layout (not necessarily full original)
+        img.width = Math.min(manifestEntry.width, 600);
+        img.height = Math.round(img.width * (manifestEntry.height / manifestEntry.width));
+    }
+
+    if (loadImmediately) {
+        if (manifestEntry && manifestEntry.default) {
+            img.src = manifestEntry.default;
+            if (manifestEntry.srcset_avif) img.srcset = manifestEntry.srcset_avif;
+            else if (manifestEntry.srcset_webp) img.srcset = manifestEntry.srcset_webp;
+            if (manifestEntry.sizes) img.sizes = manifestEntry.sizes;
+        } else {
+            img.src = src;
+        }
+    } else {
+        // defer loading
+        img.dataset.src = (manifestEntry && manifestEntry.default) ? manifestEntry.default : src;
+        img.src = LAZY_PLACEHOLDER;
+        img.dataset.manifest = src;
+    }
+
+    img.addEventListener('load', () => { img.classList.remove('loading'); img.classList.add('loaded'); });
+    pic.appendChild(img);
+    return pic;
 }

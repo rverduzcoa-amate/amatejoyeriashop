@@ -38,13 +38,17 @@ async function processFile(file) {
   await ensureDir(outDir);
 
   const variants = [];
+  let metadata = null;
+  try { metadata = await sharp(file).metadata(); } catch (e) { metadata = null; }
   for (const size of SIZES) {
     for (const fmt of FORMATS) {
       const outName = `${name}-${size}.${fmt}`;
       const outPath = path.join(outDir, outName);
       try {
         await sharp(file).resize({ width: size }).toFormat(fmt, { quality: 80 }).toFile(outPath);
-        variants.push({ src: path.posix.join(path.posix.relative(path.join(__dirname,'..'), outPath).split(path.sep).join('/')), width: size, format: fmt });
+        // estimate height preserving aspect ratio if original metadata is available
+        const height = metadata && metadata.width ? Math.round((metadata.height || size) * (size / metadata.width)) : null;
+        variants.push({ src: path.posix.join(path.posix.relative(path.join(__dirname,'..'), outPath).split(path.sep).join('/')), width: size, height, format: fmt });
       } catch (err) {
         console.error('Error processing', file, err.message);
       }
@@ -58,7 +62,21 @@ async function processFile(file) {
     await sharp(file).resize({ width: 32 }).jpeg({ quality: 50 }).toFile(placeholderPath);
   } catch (e) {}
 
-  return { original: path.posix.join('media','img', rel), variants, placeholder: path.posix.join(path.posix.relative(path.join(__dirname,'..'), placeholderPath).split(path.sep).join('/')) };
+  // choose a sensible default src (prefer webp ~640)
+  let defaultSrc = null;
+  const webp640 = variants.find(v=>v.format==='webp' && v.width===640);
+  const webpFirst = variants.find(v=>v.format==='webp');
+  const avif640 = variants.find(v=>v.format==='avif' && v.width===640);
+  defaultSrc = webp640?.src || avif640?.src || webpFirst?.src || (variants[0] && variants[0].src) || null;
+
+  return {
+    original: path.posix.join('media','img', rel),
+    variants,
+    placeholder: path.posix.join(path.posix.relative(path.join(__dirname,'..'), placeholderPath).split(path.sep).join('/')),
+    default: defaultSrc,
+    width: metadata?.width || null,
+    height: metadata?.height || null
+  };
 }
 
 (async () => {
@@ -74,7 +92,11 @@ async function processFile(file) {
       placeholder: entry.placeholder,
       srcset_webp: webp,
       srcset_avif: avif,
-      sizes: '(max-width: 600px) 50vw, 33vw'
+      sizes: '(max-width: 600px) 50vw, 33vw',
+      default: entry.default,
+      width: entry.width,
+      height: entry.height,
+      variants: entry.variants
     };
     console.log('Processed', entry.original);
   }
