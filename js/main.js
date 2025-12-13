@@ -637,8 +637,105 @@ function showCategory(category) {
         return;
     }
 
+    // If category is large, use virtualization (windowed rendering)
+    const VIRTUALIZE_THRESHOLD = 40;
+    if (productsByCategory.length > VIRTUALIZE_THRESHOLD) {
+        // cleanup any previous virtual listeners
+        if (cont.__virtualCleanup) { try { cont.__virtualCleanup(); } catch (e) {} }
+
+        const list = productsByCategory;
+        // create virtual list scaffolding
+        cont.innerHTML = '<div class="virtual-list" style="position:relative"><div class="vs-top"></div><div class="vs-items"></div><div class="vs-bottom"></div></div>';
+        const vs = cont.querySelector('.virtual-list');
+        const vsTop = vs.querySelector('.vs-top');
+        const vsItems = vs.querySelector('.vs-items');
+        const vsBottom = vs.querySelector('.vs-bottom');
+
+        // estimate item height by rendering a single invisible card
+        const estimateCard = (function(){
+            try {
+                const tmp = document.createElement('div');
+                tmp.style.position = 'absolute'; tmp.style.visibility = 'hidden'; tmp.style.left = '0';
+                tmp.appendChild(buildResponsivePicture((Array.isArray(list[0].img)?list[0].img[0]:list[0].img) || 'media/img/placeholder.jpg', { loadImmediately: true, alt: list[0].nombre || 'Producto', index: 0 }));
+                tmp.appendChild(document.createElement('h3'));
+                cont.appendChild(tmp);
+                const h = tmp.getBoundingClientRect().height || 260;
+                cont.removeChild(tmp);
+                return Math.max(120, Math.round(h));
+            } catch (e) { return 260; }
+        })();
+
+        const itemHeight = estimateCard;
+        const totalHeight = itemHeight * list.length;
+        vsBottom.style.height = totalHeight + 'px';
+
+        let rafId = null;
+        const buffer = 6;
+
+        function renderRange(start, end) {
+            start = Math.max(0, start); end = Math.min(list.length, end);
+            const topHeight = start * itemHeight;
+            const bottomHeight = Math.max(0, totalHeight - end * itemHeight);
+            vsTop.style.height = topHeight + 'px';
+            vsBottom.style.height = bottomHeight + 'px';
+
+            // create nodes
+            vsItems.innerHTML = '';
+            const frag = document.createDocumentFragment();
+            for (let i = start; i < end; i++) {
+                const prod = list[i];
+                const card = document.createElement('div');
+                card.className = 'card card-link';
+                card.style.cursor = 'pointer';
+                card.dataset.productId = prod.id;
+
+                const imgsContainer = document.createElement('div'); imgsContainer.className = 'carousel';
+                const imgsInner = document.createElement('div'); imgsInner.className = 'carousel-images';
+                const allImgs = Array.isArray(prod.img) ? prod.img : (prod.img ? [prod.img] : []);
+                const pic = buildResponsivePicture(allImgs[0] || 'media/img/placeholder.jpg', { loadImmediately: false, alt: prod.nombre || 'Producto', index: 0 });
+                imgsInner.appendChild(pic);
+                imgsContainer.appendChild(imgsInner);
+                card.appendChild(imgsContainer);
+                const title = document.createElement('h3'); title.textContent = prod.nombre || 'Producto';
+                const price = document.createElement('p'); price.className = 'precio'; price.textContent = prod.precio || '';
+                card.appendChild(title); card.appendChild(price);
+                frag.appendChild(card);
+            }
+            vsItems.appendChild(frag);
+            // Observe new images
+            try { observeLazyImages(); } catch (e) {}
+            attachProductClickHandler();
+        }
+
+        function onScroll() {
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+                const containerTop = cont.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0);
+                const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 800;
+                const start = Math.floor((scrollTop - containerTop) / itemHeight) - buffer;
+                const end = Math.ceil((scrollTop - containerTop + viewportHeight) / itemHeight) + buffer;
+                renderRange(start, end);
+            });
+        }
+
+        // initial render: first viewport
+        renderRange(0, Math.min(list.length, Math.ceil(window.innerHeight / itemHeight) + buffer));
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
+
+        cont.__virtualCleanup = () => {
+            window.removeEventListener('scroll', onScroll);
+            window.removeEventListener('resize', onScroll);
+            if (rafId) cancelAnimationFrame(rafId);
+            cont.__virtualCleanup = null;
+        };
+
+        return; // virtualization active
+    }
+
     // Render products in small chunks to avoid blocking the main thread for large lists
-    const chunkSize = 20;
+    let chunkSize = 20;
     let index = 0;
 
     function renderChunk() {
@@ -648,7 +745,7 @@ function showCategory(category) {
             const card = document.createElement('div');
             card.className = 'card card-link';
             card.style.cursor = 'pointer';
-            card.setAttribute('onclick', `router.goTo('product?id=${prod.id}')`);
+            card.dataset.productId = prod.id;
 
             const allImgs = Array.isArray(prod.img) ? prod.img : (prod.img ? [prod.img] : []);
             const hasMultiple = allImgs.length > 1;
@@ -705,7 +802,15 @@ function showCategory(category) {
         }
     }
 
+    // adapt chunkSize to viewport for faster first paint on mobile
+    const preferred = 20;
+    const adaptive = getChunkSize(preferred);
+    // start rendering with smaller chunks on narrow viewports
+    const originalChunk = chunkSize;
+    chunkSize = adaptive;
     renderChunk();
+    // ensure click delegation is attached
+    attachProductClickHandler();
 }
 
 /* ==========================
@@ -738,23 +843,34 @@ function searchProduct() {
             return;
         }
 
-        let htmlContent = [];
+        // Build DOM nodes instead of large innerHTML strings for better incremental rendering
+        const section = document.createElement('section');
+        section.id = 'products';
         resultados.forEach((prod) => {
+            const card = document.createElement('div');
+            card.className = 'card card-link';
+            card.dataset.productId = prod.id;
+            card.style.cursor = 'pointer';
+
+            const carousel = document.createElement('div'); carousel.className = 'carousel';
+            const inner = document.createElement('div'); inner.className = 'carousel-images';
             const imgSrc = Array.isArray(prod.img) ? prod.img[0] : prod.img;
-            htmlContent.push(`
-                <div class="card card-link" onclick="router.goTo('product?id=${prod.id}')">
-                    <div class="carousel">
-                        <div class="carousel-images">
-                            <img src="${imgSrc}" loading="lazy" decoding="async" class="active" alt="${escapeHtml(prod.nombre || 'Product')}">
-                        </div>
-                    </div>
-                    <h3>${prod.nombre}</h3>
-                    <p class="precio">${prod.precio}</p>
-                </div>
-            `);
+            const pic = buildResponsivePicture(imgSrc || 'media/img/placeholder.jpg', { loadImmediately: true, alt: prod.nombre || 'Product', index: 0 });
+            inner.appendChild(pic);
+            carousel.appendChild(inner);
+            card.appendChild(carousel);
+
+            const h3 = document.createElement('h3'); h3.textContent = prod.nombre;
+            const p = document.createElement('p'); p.className = 'precio'; p.textContent = prod.precio;
+            card.appendChild(h3); card.appendChild(p);
+
+            section.appendChild(card);
         });
-        cont.innerHTML = `<section id="products">${htmlContent.join('')}</section>`;
-        
+        cont.appendChild(section);
+
+        // ensure delegation and lazy images are applied
+        attachProductClickHandler();
+        try { observeLazyImages(); } catch (e) {}
         setTimeout(animateProducts, 250);
     }, 250);
 }
@@ -789,14 +905,14 @@ function renderHomeProducts() {
     if (!feed || feed.length === 0) return;
 
     // Render the first N items synchronously for immediate paint, then chunk the rest
-    const firstVisible = Math.min(8, feed.length);
+    const firstVisible = Math.min(4, feed.length); // smaller synchronous set for faster first paint
     let index = 0;
 
     function createCard(prod) {
         const card = document.createElement('div');
         card.className = 'card card-link';
         card.style.cursor = 'pointer';
-        card.setAttribute('onclick', `router.goTo('product?id=${prod.id}')`);
+        card.dataset.productId = prod.id;
         const allImgs = Array.isArray(prod.img) ? prod.img : (prod.img ? [prod.img] : []);
         const imgsContainer = document.createElement('div');
         imgsContainer.className = 'carousel';
@@ -900,4 +1016,34 @@ function buildResponsivePicture(src, { loadImmediately = false, alt = '', index 
     img.addEventListener('load', () => { img.classList.remove('loading'); img.classList.add('loaded'); });
     pic.appendChild(img);
     return pic;
+}
+// Lightweight manifest getter (handles late-loaded manifest)
+function getManifestEntry(key) {
+    if (!key) return null;
+    try { return (window.imageManifest && window.imageManifest[key]) ? window.imageManifest[key] : null; } catch (e) { return null; }
+}
+
+// Decide chunk sizes based on viewport to prioritize first-paint on mobile
+function getChunkSize(preferred = 20) {
+    try {
+        const w = window.innerWidth || document.documentElement.clientWidth || 1024;
+        if (w < 480) return Math.max(6, Math.floor(preferred / 3));
+        if (w < 900) return Math.max(8, Math.floor(preferred / 2));
+        return preferred;
+    } catch (e) { return preferred; }
+}
+
+// Centralized click handler for product cards (uses delegation)
+function attachProductClickHandler() {
+    const container = document.getElementById('products');
+    if (!container || container.__productClickAttached) return;
+    container.addEventListener('click', (ev) => {
+        let el = ev.target;
+        // walk up until card element
+        while (el && el !== container && !el.classList?.contains('card')) el = el.parentNode;
+        if (!el || el === container) return;
+        const id = el.dataset.productId;
+        if (id) router.goTo(`product?id=${encodeURIComponent(id)}`);
+    });
+    container.__productClickAttached = true;
 }
