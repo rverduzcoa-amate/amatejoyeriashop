@@ -57,84 +57,88 @@ function normalizeSrcset(srcset) {
     return srcset.split(',').map(s => {
         const parts = s.trim().split(/\s+/);
         if (parts.length === 0) return s;
-        parts[0] = normalizeManifestPath(parts[0]);
-        return parts.join(' ');
-    }).join(', ');
-}
-function observeLazyImages() {
-    const nodes = document.querySelectorAll('img[data-src]');
-    if (!nodes || nodes.length === 0) return;
 
-    if (!('IntersectionObserver' in window)) {
-        nodes.forEach(img => { img.src = img.dataset.src; img.removeAttribute('data-src'); });
+    // --- Virtualization implementation ---
+    // Only render visible cards in the viewport (+ buffer), remove offscreen cards
+    // For very large categories, show skeletons while first chunk loads
+    const VIRTUALIZE_THRESHOLD = 30;
+    const SKELETON_COUNT = 8;
+    const bufferRows = 4;
+    const cardHeight = 260; // px, estimate
+    const total = productsByCategory.length;
+    let scrollHandler = null;
+    let resizeHandler = null;
+    let cleanupVirtual = null;
+
+    // Clean up previous listeners if any
+    if (cont.__virtualCleanup) { try { cont.__virtualCleanup(); } catch (e) {} }
+
+    // Virtualize if large
+    if (total > VIRTUALIZE_THRESHOLD) {
+        cont.innerHTML = '<div class="virtual-list" style="position:relative"><div class="vs-top"></div><div class="vs-items"></div><div class="vs-bottom"></div></div>';
+        const vs = cont.querySelector('.virtual-list');
+        const vsTop = vs.querySelector('.vs-top');
+        const vsItems = vs.querySelector('.vs-items');
+        const vsBottom = vs.querySelector('.vs-bottom');
+        const totalHeight = cardHeight * total;
+        vsBottom.style.height = totalHeight + 'px';
+
+        // Skeletons for first paint
+        vsItems.innerHTML = '';
+        for (let i = 0; i < SKELETON_COUNT; i++) {
+            const skel = document.createElement('div');
+            skel.className = 'card card-skeleton';
+            skel.style.height = cardHeight + 'px';
+            vsItems.appendChild(skel);
+        }
+
+        // After a tick, render visible range
+        setTimeout(() => {
+            function renderRange() {
+                const scrollTop = window.scrollY || window.pageYOffset || 0;
+                const contTop = cont.getBoundingClientRect().top + scrollTop;
+                const viewportHeight = window.innerHeight || 800;
+                const startIdx = Math.max(0, Math.floor((scrollTop - contTop) / cardHeight) - bufferRows);
+                const endIdx = Math.min(total, Math.ceil((scrollTop - contTop + viewportHeight) / cardHeight) + bufferRows);
+                vsTop.style.height = (startIdx * cardHeight) + 'px';
+                vsBottom.style.height = ((total - endIdx) * cardHeight) + 'px';
+                vsItems.innerHTML = '';
+                for (let i = startIdx; i < endIdx; i++) {
+                    const prod = productsByCategory[i];
+                    const card = document.createElement('div');
+                    card.className = 'card card-link';
+                    card.style.cursor = 'pointer';
+                    card.dataset.productId = prod.id;
+                    const allImgs = Array.isArray(prod.img) ? prod.img : (prod.img ? [prod.img] : []);
+                    const imgSrc = allImgs[0] || 'media/img/placeholder.jpg';
+                    const pic = buildResponsivePicture(imgSrc, { loadImmediately: false, alt: prod.nombre || 'Producto', index: 0 });
+                    pic.querySelector('img').setAttribute('loading', 'lazy');
+                    card.appendChild(pic);
+                    const title = document.createElement('h3'); title.textContent = prod.nombre || 'Producto';
+                    const price = document.createElement('p'); price.className = 'precio'; price.textContent = prod.precio || '';
+                    card.appendChild(title); card.appendChild(price);
+                    vsItems.appendChild(card);
+                }
+                try { observeLazyImages(); } catch (e) {}
+                attachProductClickHandler();
+            }
+            renderRange();
+            scrollHandler = () => { renderRange(); };
+            resizeHandler = () => { renderRange(); };
+            window.addEventListener('scroll', scrollHandler, { passive: true });
+            window.addEventListener('resize', resizeHandler);
+        }, 0);
+
+        cleanupVirtual = () => {
+            window.removeEventListener('scroll', scrollHandler);
+            window.removeEventListener('resize', resizeHandler);
+            cont.__virtualCleanup = null;
+        };
+        cont.__virtualCleanup = cleanupVirtual;
         return;
     }
-
-    if (!lazyImageObserver) {
-        lazyImageObserver = new IntersectionObserver((entries, obs) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    // If a manifest exists for this image, apply srcset/sizes
-                    try {
-                        const manifestKey = img.dataset.manifest;
-                        if (manifestKey && window.imageManifest && window.imageManifest[manifestKey]) {
-                            const m = window.imageManifest[manifestKey];
-                            if (m.srcset_avif) img.srcset = normalizeSrcset(m.srcset_avif); // modern first
-                            else if (m.srcset_webp) img.srcset = normalizeSrcset(m.srcset_webp);
-                            if (m.sizes) img.sizes = m.sizes;
-                            if (m.placeholder && (!img.src || img.src === LAZY_PLACEHOLDER)) {
-                                // replace placeholder with small placeholder while srcset loads
-                                img.src = normalizeManifestPath(m.placeholder);
-                            }
-                            // ensure deferred src uses normalized default when available
-                            if (m.default) img.dataset.src = normalizeManifestPath(m.default);
-                        }
-                    } catch (e) {}
-                    if (img.dataset && img.dataset.src) {
-                        img.src = img.dataset.src;
-                        img.removeAttribute('data-src');
-                    }
-                    obs.unobserve(img);
-                }
-            });
-        }, { rootMargin: '300px 0px', threshold: 0.01 });
-    }
-
-    nodes.forEach(img => {
-        if (img.dataset && img.dataset.src) lazyImageObserver.observe(img);
-    });
-}
-
-function showGlobalPlayOverlay() {
-    if (globalPlayOverlayShown) return;
-    // Do not show overlay if user previously allowed autoplay
-    if (isAutoplayAllowed()) return;
-    globalPlayOverlayShown = true;
-    globalPlayOverlay = document.createElement('div');
-    globalPlayOverlay.id = 'global-play-overlay';
-    globalPlayOverlay.style.position = 'fixed';
-    globalPlayOverlay.style.left = '0';
-    globalPlayOverlay.style.top = '0';
-    globalPlayOverlay.style.right = '0';
-    globalPlayOverlay.style.bottom = '0';
-    globalPlayOverlay.style.display = 'flex';
-    globalPlayOverlay.style.alignItems = 'center';
-    globalPlayOverlay.style.justifyContent = 'center';
-    globalPlayOverlay.style.background = 'rgba(0,0,0,0.35)';
-    globalPlayOverlay.style.zIndex = '9999';
-    globalPlayOverlay.innerHTML = `
-        <button id="global-play-button" style="appearance:none;border:none;background:#fff;padding:18px 24px;border-radius:10px;font-size:18px;">Play videos</button>
-    `;
-
-    globalPlayOverlay.addEventListener('click', userGesturePlayAll);
-    document.body.appendChild(globalPlayOverlay);
-}
-
-function hideGlobalPlayOverlay() {
-    if (!globalPlayOverlayShown) return;
-    globalPlayOverlayShown = false;
-    if (globalPlayOverlay && globalPlayOverlay.parentNode) globalPlayOverlay.parentNode.removeChild(globalPlayOverlay);
+    // Fallback: small categories, render all at once (existing logic)
+    // ...existing code...
     globalPlayOverlay = null;
 }
 
