@@ -1,3 +1,46 @@
+// Build a responsive <picture> element using the image manifest when available.
+function buildResponsivePicture(src, { loadImmediately = false, alt = '', index = 0 } = {}) {
+    const pic = document.createElement('picture');
+    const manifestEntry = (window.imageManifest && window.imageManifest[src]) ? window.imageManifest[src] : null;
+
+    if (manifestEntry && manifestEntry.srcset_avif) {
+        const s = document.createElement('source'); s.type = 'image/avif'; s.srcset = normalizeSrcset(manifestEntry.srcset_avif); if (manifestEntry.sizes) s.sizes = manifestEntry.sizes; pic.appendChild(s);
+    }
+    if (manifestEntry && manifestEntry.srcset_webp) {
+        const s2 = document.createElement('source'); s2.type = 'image/webp'; s2.srcset = normalizeSrcset(manifestEntry.srcset_webp); if (manifestEntry.sizes) s2.sizes = manifestEntry.sizes; pic.appendChild(s2);
+    }
+
+    const img = document.createElement('img');
+    img.alt = alt || '';
+    img.className = index === 0 ? 'active loading' : 'loading';
+    img.loading = 'lazy'; img.decoding = 'async';
+
+    if (manifestEntry && manifestEntry.width && manifestEntry.height) {
+        // set moderate display width to help layout (not necessarily full original)
+        img.width = Math.min(manifestEntry.width, 600);
+        img.height = Math.round(img.width * (manifestEntry.height / manifestEntry.width));
+    }
+
+    if (loadImmediately) {
+        if (manifestEntry && manifestEntry.default) {
+            img.src = normalizeManifestPath(manifestEntry.default);
+            if (manifestEntry.srcset_avif) img.srcset = normalizeSrcset(manifestEntry.srcset_avif);
+            else if (manifestEntry.srcset_webp) img.srcset = normalizeSrcset(manifestEntry.srcset_webp);
+            if (manifestEntry.sizes) img.sizes = manifestEntry.sizes;
+        } else {
+            img.src = src;
+        }
+    } else {
+        // defer loading
+        img.dataset.src = (manifestEntry && manifestEntry.default) ? normalizeManifestPath(manifestEntry.default) : src;
+        img.src = LAZY_PLACEHOLDER;
+        img.dataset.manifest = src;
+    }
+
+    img.addEventListener('load', () => { img.classList.remove('loading'); img.classList.add('loaded'); });
+    pic.appendChild(img);
+    return pic;
+}
 // Minimal global play overlay implementation to prevent fatal errors
 function showGlobalPlayOverlay() {
     // Optionally, show a UI overlay here
