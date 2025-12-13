@@ -1,3 +1,13 @@
+// Minimal global play overlay implementation to prevent fatal errors
+function showGlobalPlayOverlay() {
+    // Optionally, show a UI overlay here
+    console.warn('[DEBUG] showGlobalPlayOverlay called (implement overlay UI if needed)');
+}
+
+function hideGlobalPlayOverlay() {
+    // Optionally, hide the overlay UI here
+    console.warn('[DEBUG] hideGlobalPlayOverlay called (implement overlay UI if needed)');
+}
 /* ==========================
     CONTROL DE VISTAS HOME
 ========================== */
@@ -16,7 +26,7 @@ function toggleHomeView(showVideos = true) {
         if(titleWrapper) titleWrapper.style.display = 'none';
     }
 // ...existing code...
-
+}
 /* ==========================
     CARRUSEL DE VIDEOS (Reels Global con SWIPE)
 ========================== */
@@ -73,16 +83,6 @@ function userGesturePlayAll() {
                 } catch (e) {}
             });
         }
-
-        if (Array.isArray(categoryVideoElements)) {
-            categoryVideoElements.forEach(item => {
-                try {
-                    item.video.muted = true;
-                    const p2 = item.video.play();
-                    if (p2 && typeof p2.then === 'function') p2.then(()=>setAutoplayAllowed()).catch(()=>{});
-                } catch (e) {}
-            });
-        }
     } finally {
         hideGlobalPlayOverlay();
         // Start intervals if needed
@@ -101,9 +101,13 @@ function escapeHtml(str) {
 }
 
 function initVideoCarousel() {
+    console.log('[DEBUG] initVideoCarousel called');
     const container = document.getElementById('videoSlides');
+    console.log('[DEBUG] #videoSlides:', container);
+    console.log('[DEBUG] videosHome:', typeof videosHome, Array.isArray(videosHome) ? videosHome.length : videosHome);
     // Validamos que existan datos de videos
     if (!container || typeof videosHome === 'undefined' || videosHome.length === 0) {
+        console.warn('[DEBUG] Aborting: container missing or videosHome undefined/empty');
         return;
     }
 
@@ -141,9 +145,8 @@ function initVideoCarousel() {
         videoCarouselContainerElement.addEventListener('touchmove', handleTouchMove, { passive: true });
         videoCarouselContainerElement.addEventListener('touchend', handleTouchEnd);
     }
-    // Only load and play videos after user gesture
-    document.body.addEventListener('click', loadAllVideosOnce, { once: true });
-    document.body.addEventListener('touchstart', loadAllVideosOnce, { once: true });
+    // Try to load and play videos automatically
+    loadAllVideosOnce();
 }
 
 function loadAllVideosOnce() {
@@ -616,7 +619,6 @@ function showCategory(category) {
             const bottomHeight = Math.max(0, totalHeight - end * itemHeight);
             vsTop.style.height = topHeight + 'px';
             vsBottom.style.height = bottomHeight + 'px';
-
             // create nodes
             vsItems.innerHTML = '';
             const frag = document.createDocumentFragment();
@@ -626,7 +628,6 @@ function showCategory(category) {
                 card.className = 'card card-link';
                 card.style.cursor = 'pointer';
                 card.dataset.productId = prod.id;
-
                 const imgsContainer = document.createElement('div'); imgsContainer.className = 'carousel';
                 const imgsInner = document.createElement('div'); imgsInner.className = 'carousel-images';
                 const allImgs = Array.isArray(prod.img) ? prod.img : (prod.img ? [prod.img] : []);
@@ -644,6 +645,8 @@ function showCategory(category) {
             try { observeLazyImages(); } catch (e) {}
             attachProductClickHandler();
         }
+
+        function onScroll() {
             if (rafId) cancelAnimationFrame(rafId);
             rafId = requestAnimationFrame(() => {
                 const scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
@@ -665,8 +668,8 @@ function showCategory(category) {
             window.removeEventListener('resize', onScroll);
             if (rafId) cancelAnimationFrame(rafId);
             cont.__virtualCleanup = null;
-    };
-    return; // virtualization active
+        };
+        return; // virtualization active
 }
 
     // Fallback: small categories, render all at once (existing logic)
